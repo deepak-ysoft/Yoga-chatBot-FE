@@ -1,7 +1,18 @@
-import { useState, useEffect, useRef } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import {
+  useState,
+  useEffect,
+  useRef,
+} from "react";
+import {
+  useSearchParams,
+  Link,
+} from "react-router-dom";
 import ZenNav from "../components/layout/ZenNav";
-import { motion as _motion, AnimatePresence } from "framer-motion";
+import {
+  motion as _motion,
+  AnimatePresence,
+} from "framer-motion";
+import ConfirmModal from "../components/ui/ConfirmModal";
 import {
   Send,
   Plus,
@@ -16,23 +27,24 @@ import {
 import api from "../services/api";
 import ReactMarkdown from "react-markdown";
 
-const typingCursorStyle = `
-  @keyframes typing-cursor {
-    0%, 49% { opacity: 1; }
-    50%, 100% { opacity: 0; }
-  }
-  .typing-cursor {
-    display: inline-block;
-    width: 2px;
-    height: 1em;
-    background-color: currentColor;
-    animation: typing-cursor 1s infinite;
-    margin-left: 2px;
-  }
-`;
+// const typingCursorStyle = `
+//   @keyframes typing-cursor {
+//     0%, 49% { opacity: 1; }
+//     50%, 100% { opacity: 0; }
+//   }
+//   .typing-cursor {
+//     display: inline-block;
+//     width: 2px;
+//     height: 1em;
+//     background-color: currentColor;
+//     animation: typing-cursor 1s infinite;
+//     margin-left: 2px;
+//   }
+// `;
 
 const Chat = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] =
+    useSearchParams();
   const sessionId = searchParams.get("session");
 
   const [sessions, setSessions] = useState([]);
@@ -40,11 +52,18 @@ const Chat = () => {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [typingMessageIndex, setTypingMessageIndex] = useState(null);
-  const [displayedTextLength, setDisplayedTextLength] = useState(0);
+  const [isSidebarOpen, setIsSidebarOpen] =
+    useState(true);
+  const [
+    deleteSessionModal,
+    setDeleteSessionModal,
+  ] = useState({ isOpen: false, id: null });
+  const [
+    deleteMessageModal,
+    setDeleteMessageModal,
+  ] = useState({ isOpen: false, id: null });
 
   const messagesEndRef = useRef(null);
-  const typingIntervalRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({
@@ -57,36 +76,6 @@ const Chat = () => {
   }, [messages, isTyping]);
 
   useEffect(() => {
-    if (typingMessageIndex === null || typingMessageIndex >= messages.length)
-      return;
-
-    const message = messages[typingMessageIndex];
-    const fullText = message.message;
-
-    if (displayedTextLength >= fullText.length) {
-      setTypingMessageIndex(null);
-      return;
-    }
-
-    typingIntervalRef.current = setTimeout(() => {
-      setDisplayedTextLength((prev) => prev + 1);
-    }, 15);
-
-    return () => clearTimeout(typingIntervalRef.current);
-  }, [displayedTextLength, typingMessageIndex, messages]);
-
-  useEffect(() => {
-    // Inject typing cursor styles
-    const styleId = "typing-cursor-styles";
-    if (!document.getElementById(styleId)) {
-      const style = document.createElement("style");
-      style.id = styleId;
-      style.textContent = typingCursorStyle;
-      document.head.appendChild(style);
-    }
-  }, []);
-
-  useEffect(() => {
     fetchSessions();
     if (sessionId) {
       fetchHistory(sessionId);
@@ -97,7 +86,9 @@ const Chat = () => {
 
   const fetchSessions = async () => {
     try {
-      const response = await api.get("/chat/sessions");
+      const response = await api.get(
+        "/chat/sessions",
+      );
       setSessions(response.data.data || []);
     } catch (err) {
       console.error(err);
@@ -107,7 +98,9 @@ const Chat = () => {
   const fetchHistory = async (id) => {
     setLoading(true);
     try {
-      const response = await api.get(`/chat/history/${id}`);
+      const response = await api.get(
+        `/chat/history/${id}`,
+      );
       setMessages(response.data.data || []);
     } catch (err) {
       console.error(err);
@@ -129,58 +122,88 @@ const Chat = () => {
     setIsTyping(true);
 
     try {
-      const response = await fetch(`${api.defaults.baseURL}/chat/send`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const response = await fetch(
+        `${api.defaults.baseURL}/chat/send`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            Message: input,
+            sessionId: sessionId || null,
+          }),
         },
-        body: JSON.stringify({
-          Message: input,
-          sessionId: sessionId || null,
-        }),
-      });
+      );
 
-      if (!response.ok) throw new Error("Failed to send");
+      if (!response.ok)
+        throw new Error("Failed to send");
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let assistantContent = "";
 
-      setMessages((prev) => [...prev, { role: "Assistant", message: "" }]);
-      setTypingMessageIndex(messages.length);
-      setDisplayedTextLength(0);
+      setMessages((prev) => [
+        ...prev,
+        { role: "Assistant", message: "" },
+      ]);
 
+      let lineBuffer = "";
       while (true) {
-        const { value, done } = await reader.read();
+        const { value, done } =
+          await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n");
+        lineBuffer += decoder.decode(value, {
+          stream: true,
+        });
+        const lines = lineBuffer.split("\n");
+
+        // Keep the last incomplete line in the buffer
+        lineBuffer = lines.pop() || "";
+
         for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const jsonStr = line.replace("data: ", "");
-            try {
-              const data = JSON.parse(jsonStr);
-              const content = data.text;
-              if (content === "[DONE]") continue;
+          const trimmedLine = line.trim();
+          if (
+            !trimmedLine ||
+            !trimmedLine.startsWith("data: ")
+          )
+            continue;
+
+          const jsonStr = trimmedLine.replace(
+            "data: ",
+            "",
+          );
+          if (jsonStr === "[DONE]") continue;
+
+          try {
+            const data = JSON.parse(jsonStr);
+            const content = data.text;
+            if (content) {
               assistantContent += content;
 
               setMessages((prev) => {
                 const newMessages = [...prev];
-                newMessages[newMessages.length - 1].message = assistantContent;
+                newMessages[
+                  newMessages.length - 1
+                ].message = assistantContent;
                 return newMessages;
               });
-            } catch (e) {
-              console.warn(`Stream line parse fail, ${e.message}:`, line);
             }
+          } catch (e) {
+            console.warn(
+              `Stream line parse fail, ${e.message}:`,
+              line,
+            );
           }
         }
       }
 
-      setTypingMessageIndex(null);
       await fetchSessions();
-      const newSessionId = response.headers.get("X-Session-Id");
+      const newSessionId = response.headers.get(
+        "X-Session-Id",
+      );
       if (newSessionId) {
         setSearchParams({
           session: newSessionId,
@@ -188,12 +211,12 @@ const Chat = () => {
       }
     } catch (err) {
       console.error(err);
-      setTypingMessageIndex(null);
       setMessages((prev) => [
         ...prev,
         {
           role: "Assistant",
-          message: "The divine flow was interrupted. Please try re-sending.",
+          message:
+            "The divine flow was interrupted. Please try re-sending.",
         },
       ]);
     } finally {
@@ -201,254 +224,534 @@ const Chat = () => {
     }
   };
 
-  const deleteSession = async (id) => {
-    if (!confirm("This will permanently archive this dialogue. Continue?"))
-      return;
+  const handleDeleteSession = async () => {
+    if (!deleteSessionModal.id) return;
     try {
-      await api.delete(`/chat/sessions/${id}`);
+      await api.delete(
+        `/chat/sessions/${deleteSessionModal.id}`,
+      );
       fetchSessions();
-      if (sessionId === id) setSearchParams({});
+      if (sessionId === deleteSessionModal.id)
+        setSearchParams({});
     } catch (err) {
       console.error(err);
     }
   };
 
-  const TypingIndicator = () => (
-    <div className="flex gap-2 p-5 bg-white border border-sage-100 rounded-3xl rounded-tl-none w-fit shadow-sm">
-      {[0, 1, 2].map((i) => (
-        <_motion.div
-          key={i}
-          animate={{ y: [0, -6, 0] }}
-          transition={{
-            duration: 0.8,
-            repeat: Infinity,
-            delay: i * 0.15,
-          }}
-          className="w-1.5 h-1.5 bg-[#3a4d3f] rounded-full"
-        />
-      ))}
-    </div>
-  );
+  const handleDeleteMessage = async () => {
+    if (!deleteMessageModal.id) return;
+    try {
+      await api.delete(
+        `/chat/message/${deleteMessageModal.id}`,
+      );
+      // Refresh current session history
+      if (sessionId) fetchHistory(sessionId);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <ZenNav>
-      <div className="h-[calc(100vh-80px)] flex gap-8 max-w-7xl mx-auto px-8 py-6">
-        {/* Reflections Sidebar - Elevated Design */}
-        <aside className="hidden lg:flex w-96 flex-col gap-6 bg-white/60 backdrop-blur-md rounded-[3rem] border border-white/80 p-8 shadow-lg overflow-hidden">
-          <div className="space-y-1">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-2xl font-serif text-[#2d3a30]">Archive</h2>
-              <Link to="/chat">
-                <_motion.button
-                  whileHover={{ scale: 1.08 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-11 h-11 bg-linear-to-br from-[#3a4d3f] to-[#2d3a30] text-white rounded-2xl shadow-lg flex items-center justify-center hover:shadow-xl transition-all"
-                  title="New Reflection"
-                >
-                  <Plus size={22} />
-                </_motion.button>
-              </Link>
-            </div>
-            <div className="w-12 h-1 bg-[#3a4d3f]/20 rounded-full" />
-          </div>
+      <div className="h-[calc(100vh-64px)] flex overflow-hidden bg-cream relative">
+        {/* Immersive Background Decor */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute top-[20%] right-[-5%] w-[30%] h-[30%] bg-primary/3 blur-[100px] rounded-full" />
+          <div className="absolute bottom-[10%] left-[-5%] w-[25%] h-[25%] bg-sage-200/10 blur-[80px] rounded-full" />
+        </div>
 
-          <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
-            {sessions.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-center py-16">
-                <p className="text-sage-400 italic text-sm font-medium">
-                  No dialogues yet
-                </p>
-              </div>
-            ) : (
-              sessions.map((s) => (
-                <_motion.div
-                  key={s.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="relative group"
-                >
+        {/* Collapsible Conversation History */}
+        <AnimatePresence initial={false}>
+          {isSidebarOpen && (
+            <>
+              {/* Mobile Overlay for Sidebar */}
+              <_motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() =>
+                  setIsSidebarOpen(false)
+                }
+                className="fixed inset-0 bg-sage-900/20 backdrop-blur-sm z-30 lg:hidden"
+              />
+              <_motion.aside
+                initial={{ width: 0, x: -320 }}
+                animate={{ width: 320, x: 0 }}
+                exit={{ width: 0, x: -320 }}
+                className="absolute lg:relative top-0 left-0 bottom-0 bg-white/80 backdrop-blur-xl border-r border-white/60 flex flex-col h-full overflow-hidden z-40 shadow-2xl lg:shadow-none"
+              >
+                <div className="p-6 border-b border-sage-50 flex items-center justify-between shrink-0 bg-white/40">
+                  <h2 className="text-xl font-serif text-primary-dark tracking-tight">
+                    Dialogues
+                  </h2>
                   <Link
-                    to={`/chat?session=${s.id}`}
-                    className={`block p-5 rounded-2xl transition-all duration-300 ${
-                      sessionId === s.id
-                        ? "bg-white border-2 border-[#3a4d3f] shadow-lg"
-                        : "bg-white/50 border-2 border-transparent hover:bg-white hover:border-sage-100 shadow-sm hover:shadow-md"
-                    }`}
+                    to="/chat"
+                    onClick={() => {
+                      setSearchParams({});
+                      if (
+                        window.innerWidth < 1024
+                      )
+                        setIsSidebarOpen(false);
+                    }}
                   >
-                    <div className="space-y-1.5">
-                      <p
-                        className={`text-xs font-black uppercase tracking-widest leading-tight truncate ${sessionId === s.id ? "text-[#3a4d3f]" : "text-sage-600"}`}
-                      >
-                        {s.title || "Spiritual Dialogue"}
-                      </p>
-                      <p className="text-[10px] font-bold text-sage-400">
-                        {new Date(s.createdAt).toLocaleDateString()}
+                    <_motion.button
+                      whileHover={{
+                        scale: 1.05,
+                        rotate: 90,
+                      }}
+                      whileTap={{ scale: 0.95 }}
+                      className="w-10 h-10 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20"
+                    >
+                      <Plus size={20} />
+                    </_motion.button>
+                  </Link>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+                  {sessions.length === 0 ?
+                    <div className="h-full flex flex-col items-center justify-center text-center p-8 space-y-4 opacity-40">
+                      <History
+                        size={40}
+                        className="text-sage-300"
+                      />
+                      <p className="text-xs font-bold uppercase tracking-widest text-sage-400">
+                        Empty Archives
                       </p>
                     </div>
-                  </Link>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      deleteSession(s.id);
-                    }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 text-sage-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50/30 rounded-lg"
-                    title="Remove Reflection"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </_motion.div>
-              ))
-            )}
-          </div>
-        </aside>
-
-        {/* Main Conversation Area - Modern & Spacious */}
-        <div className="flex-1 flex flex-col bg-white/70 backdrop-blur-sm rounded-[3.5rem] border border-white/80 shadow-[0_20px_60px_rgba(0,0,0,0.08)] relative overflow-hidden">
-          {/* Header - Elegant Design */}
-          <header className="px-10 py-8 border-b border-sage-100/50 flex items-center justify-between bg-linear-to-r from-white/50 to-sage-50/30 backdrop-blur-sm">
-            <div className="flex items-center gap-6">
-              <Link
-                to="/dashboard"
-                className="lg:hidden p-2 hover:bg-sage-50 rounded-xl text-sage-400 transition-colors"
-              >
-                <ChevronLeft size={24} />
-              </Link>
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-[#3a4d3f] to-[#2d3a30] flex items-center justify-center text-white shadow-xl shadow-sage-900/20">
-                  <Sparkles size={26} />
+                  : sessions.map((s) => (
+                      <div
+                        key={s.id}
+                        className="group relative"
+                      >
+                        <Link
+                          to={`/chat?session=${s.id}`}
+                          onClick={() => {
+                            if (
+                              window.innerWidth <
+                              1024
+                            )
+                              setIsSidebarOpen(
+                                false,
+                              );
+                          }}
+                          className={`block p-4 rounded-2xl transition-all duration-300 border ${
+                            sessionId === s.id ?
+                              "bg-white border-primary/20 shadow-lg shadow-primary/5 translate-x-1"
+                            : "bg-white/40 border-transparent hover:bg-white hover:border-sage-100 hover:translate-x-1"
+                          }`}
+                        >
+                          <p
+                            className={`text-sm font-bold truncate ${sessionId === s.id ? "text-primary" : "text-sage-700"}`}
+                          >
+                            {s.title ||
+                              "Spiritual Dialogue"}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1.5">
+                            <div
+                              className={`w-1.5 h-1.5 rounded-full ${sessionId === s.id ? "bg-primary animate-pulse" : "bg-sage-200"}`}
+                            />
+                            <p className="text-[10px] text-sage-400 uppercase tracking-widest font-black">
+                              {new Date(
+                                s.createdAt,
+                              ).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </Link>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setDeleteSessionModal(
+                              {
+                                isOpen: true,
+                                id: s.id,
+                              },
+                            );
+                          }}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 text-sage-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50 rounded-xl"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))
+                  }
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-xl font-serif text-[#2d3a30] leading-tight">
-                    Spiritual Guide
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 bg-green-500 rounded-full shadow-lg shadow-green-500/50" />
-                    <span className="text-[10px] font-black text-sage-500 uppercase tracking-[0.2em]">
-                      Synchronized
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button className="p-3 text-sage-400 hover:bg-sage-50/50 rounded-2xl transition-all hover:text-sage-600">
-              <MoreVertical size={22} />
-            </button>
-          </header>
+              </_motion.aside>
+            </>
+          )}
+        </AnimatePresence>
 
-          {/* Messages Area - Spacious Layout */}
-          <div className="flex-1 overflow-y-auto p-10 space-y-10 custom-scrollbar">
-            {loading ? (
+        {/* Toggle Sidebar Button */}
+        <button
+          onClick={() =>
+            setIsSidebarOpen(!isSidebarOpen)
+          }
+          className={`absolute left-0 top-1/2 -translate-y-1/2 z-20 w-5 h-14 bg-white border border-l-0 border-sage-100 rounded-r-2xl flex items-center justify-center text-sage-400 hover:text-primary transition-all duration-500 shadow-md ${isSidebarOpen ? "ml-[320px]" : "ml-0"} lg:flex hidden`}
+        >
+          <ChevronLeft
+            size={16}
+            className={`transition-transform duration-500 ${isSidebarOpen ? "" : "rotate-180"}`}
+          />
+        </button>
+
+        {/* Mobile Sidebar Toggle (Floating Button) */}
+        {!isSidebarOpen && (
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="lg:hidden absolute left-4 bottom-[120px] z-30 w-11 h-11 bg-white/90 backdrop-blur-md border border-sage-100 rounded-xl shadow-xl flex items-center justify-center text-primary group active:scale-90 transition-all hover:bg-white"
+          >
+            <History
+              size={18}
+              className="group-hover:rotate-[-20deg] transition-transform"
+            />
+          </button>
+        )}
+
+        {/* Main Chat Window */}
+        <div className="flex-1 flex flex-col relative min-w-0 z-10">
+          <div
+            className={`flex-1 p-4 md:p-10 lg:p-14 space-y-6 md:space-y-10 custom-scrollbar ${messages.length === 0 ? "overflow-hidden mt-0" : "overflow-y-auto"}`}
+          >
+            {loading ?
               <div className="flex items-center justify-center h-full text-sage-400 flex-col gap-6">
-                <Loader2 className="animate-spin text-[#3a4d3f]" size={48} />
-                <p className="text-sm font-bold uppercase tracking-widest text-[#2d3a30]">
-                  Opening the scrolls...
+                <div className="relative">
+                  <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full animate-pulse" />
+                  <Loader2
+                    className="animate-spin text-primary relative z-10"
+                    size={48}
+                  />
+                </div>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em]">
+                  Synchronizing Spirit...
                 </p>
               </div>
-            ) : messages.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-center space-y-10 p-20">
+            : messages.length === 0 ?
+              <div className="flex flex-col items-center justify-center h-full max-w-xl mx-auto text-center space-y-8">
                 <_motion.div
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                  className="w-40 h-40 rounded-full bg-linear-to-br from-[#3a4d3f]/5 to-[#2d3a30]/5 flex items-center justify-center text-[#3a4d3f]"
+                  initial={{
+                    opacity: 0,
+                    scale: 0.9,
+                    y: 20,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
+                    y: 0,
+                  }}
+                  transition={{ duration: 0.6 }}
+                  className="bg-gradient-to-br from-white/90 via-white/85 to-cream/80 backdrop-blur-xl p-8 md:p-14 rounded-2xl shadow-2xl shadow-primary/10 border border-white/80 relative group overflow-hidden"
                 >
-                  <Sparkles size={80} className="opacity-30" />
-                </_motion.div>
-                <div className="max-w-sm">
-                  <h4 className="text-4xl font-serif text-[#2d3a30] mb-4">
-                    Divine Connection
-                  </h4>
-                  <p className="text-base text-sage-500 leading-relaxed font-medium">
-                    Whisper your curiosities or intentions. Your guide is ready
-                    to illuminate your path with wisdom and insight.
+                  <div className="absolute -inset-6 bg-gradient-to-r from-primary/10 via-sage-200/5 to-primary/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                  <_motion.div
+                    animate={{
+                      y: [0, -15, 0],
+                      rotate: [0, 5, -5, 0],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <Sparkles
+                      size={56}
+                      className="text-primary/20 mx-auto mb-6 transition-transform duration-700 group-hover:text-primary/30 group-hover:scale-110 md:size-42"
+                    />
+                  </_motion.div>
+                  <h3 className="text-3xl md:text-5xl font-serif text-primary-dark mb-4 tracking-tight">
+                    Digital Sanctuary
+                  </h3>
+                  <p className="text-sage-600 text-sm md:text-lg leading-relaxed font-medium">
+                    Begin your dialogue. Whisper
+                    your curiosities, intentions,
+                    or ask for guidance. Your AI
+                    companion awaits to illuminate
+                    your path.
                   </p>
-                </div>
+                  <div className="mt-6 md:mt-8 pt-6 md:pt-8 border-t border-primary/10 flex items-center justify-center gap-2 md:gap-3">
+                    <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-primary rounded-full animate-pulse" />
+                    <p className="text-[10px] md:text-xs text-sage-400 font-bold uppercase tracking-widest">
+                      Ready to listen
+                    </p>
+                  </div>
+                </_motion.div>
               </div>
-            ) : (
-              messages.map((m, i) => {
-                const isUser = m.role?.toLowerCase() === "user";
-                const isBeingTyped = i === typingMessageIndex;
-                const displayedText = isBeingTyped
-                  ? m.message.substring(0, displayedTextLength)
-                  : m.message;
+            : messages.map((m, i) => {
+                const isUser =
+                  m.role?.toLowerCase() ===
+                  "user";
                 return (
                   <_motion.div
                     key={i}
                     initial={{
                       opacity: 0,
                       y: 20,
+                      scale: 0.95,
                     }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      scale: 1,
+                    }}
+                    transition={{
+                      type: "spring",
+                      damping: 22,
+                      stiffness: 180,
+                    }}
                     className={`flex ${isUser ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`flex gap-5 max-w-[85%] sm:max-w-[75%] ${isUser ? "flex-row-reverse" : ""}`}
+                      className={`flex gap-3 md:gap-4 max-w-[92%] md:max-w-[75%] ${isUser ? "flex-row-reverse" : ""}`}
                     >
-                      <div
-                        className={`w-11 h-11 rounded-2xl shrink-0 flex items-center justify-center shadow-lg transform transition-transform ${
-                          isUser
-                            ? "bg-linear-to-br from-[#3a4d3f] to-[#2d3a30] text-white rotate-3"
-                            : "bg-white text-[#3a4d3f] border-2 border-sage-100 -rotate-3"
+                      <_motion.div
+                        whileHover={{
+                          scale: 1.12,
+                          rotate: 5,
+                        }}
+                        className={`w-8 h-8 md:w-10 md:h-10 rounded-xl md:rounded-2xl shrink-0 flex items-center justify-center shadow-lg transition-all font-bold ${
+                          isUser ?
+                            "bg-gradient-to-br from-primary to-primary-dark text-white"
+                          : "bg-gradient-to-br from-sage-100 to-cream text-primary border border-primary/20"
                         }`}
                       >
-                        {isUser ? <User size={20} /> : <Sparkles size={20} />}
-                      </div>
-                      <div
-                        className={`p-6 rounded-4xl shadow-md text-sm leading-relaxed prose prose-sm max-w-none transition-all ${
-                          isUser
-                            ? "bg-linear-to-br from-[#3a4d3f] to-[#2d3a30] text-white rounded-tr-none font-medium prose-invert"
-                            : "bg-white border-2 border-sage-100 text-sage-950 rounded-tl-none prose-headings:text-[#2d3a30] prose-headings:font-serif"
+                        {isUser ?
+                          <User
+                            size={16}
+                            className="md:size-5"
+                          />
+                        : <Sparkles
+                            size={16}
+                            className="md:size-5"
+                          />
+                        }
+                      </_motion.div>
+                      <_motion.div
+                        whileHover={{
+                          scale: 1.02,
+                        }}
+                        className={`p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-lg text-sm md:text-base leading-relaxed relative overflow-hidden group ${
+                          isUser ?
+                            "bg-gradient-to-br from-primary to-primary-dark text-white rounded-tr-none shadow-primary/20"
+                          : "bg-white border border-sage-100/70 text-sage-900 rounded-tl-none shadow-primary/5 hover:shadow-primary/15 transition-shadow"
                         }`}
                       >
-                        <ReactMarkdown>{displayedText}</ReactMarkdown>
-                        {isBeingTyped &&
-                          displayedTextLength < m.message.length && (
-                            <span className="typing-cursor" />
-                          )}
-                      </div>
+                        {!isUser && (
+                          <>
+                            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-sage-200/10 to-primary/10 blur-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div
+                              className="prose prose-sm md:prose-base max-w-none 
+                              prose-headings:font-serif prose-headings:text-primary-dark 
+                              prose-p:text-sage-700 prose-p:leading-relaxed prose-p:mb-4
+                              prose-ul:my-4 prose-ul:list-disc prose-ul:pl-5
+                              prose-ol:my-4 prose-ol:list-decimal prose-ol:pl-5
+                              prose-li:text-sage-700 prose-li:my-1 prose-li:marker:text-primary
+                              prose-strong:text-primary-dark prose-strong:font-bold
+                              prose-a:text-primary hover:prose-a:text-primary-dark 
+                              prose-code:bg-primary/5 prose-code:text-primary prose-code:px-2 prose-code:py-1 prose-code:rounded
+                              whitespace-pre-wrap"
+                            >
+                              <ReactMarkdown>
+                                {m.message}
+                              </ReactMarkdown>
+                            </div>
+                            <button
+                              onClick={() =>
+                                setDeleteMessageModal(
+                                  {
+                                    isOpen: true,
+                                    id: m.id,
+                                  },
+                                )
+                              }
+                              className="absolute top-2 right-2 p-1.5 text-sage-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50 rounded-lg"
+                              title="Delete Message"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </>
+                        )}
+                        {isUser && (
+                          <div className="flex items-center gap-3">
+                            <span className="font-medium">
+                              {m.message}
+                            </span>
+                            <button
+                              onClick={() =>
+                                setDeleteMessageModal(
+                                  {
+                                    isOpen: true,
+                                    id: m.id,
+                                  },
+                                )
+                              }
+                              className="p-1 px-2 text-white/50 hover:text-white transition-colors"
+                              title="Delete Message"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        )}
+                      </_motion.div>
                     </div>
                   </_motion.div>
                 );
               })
+            }
+            {isTyping && (
+              <_motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex justify-start"
+              >
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-2xl shrink-0 flex items-center justify-center bg-gradient-to-br from-sage-100 to-cream text-primary border border-primary/20 shadow-lg">
+                    <Sparkles size={20} />
+                  </div>
+                  <_motion.div
+                    initial={{
+                      opacity: 0,
+                      scale: 0.8,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      scale: 1,
+                    }}
+                    className="bg-white border border-sage-100/70 p-6 rounded-3xl rounded-tl-none flex gap-3 shadow-lg shadow-primary/5"
+                  >
+                    {[0, 1, 2].map((i) => (
+                      <_motion.div
+                        key={i}
+                        animate={{
+                          y: [0, -10, 0],
+                          scale: [0.8, 1, 0.8],
+                          opacity: [0.4, 1, 0.4],
+                        }}
+                        transition={{
+                          duration: 1.2,
+                          repeat: Infinity,
+                          delay: i * 0.2,
+                          ease: "easeInOut",
+                        }}
+                        className="w-2.5 h-2.5 bg-gradient-to-b from-primary to-primary-dark rounded-full shadow-sm"
+                      />
+                    ))}
+                  </_motion.div>
+                </div>
+              </_motion.div>
             )}
-            {isTyping && <TypingIndicator />}
-            <div ref={messagesEndRef} />
+            <div
+              ref={messagesEndRef}
+              className="h-4"
+            />
           </div>
 
-          {/* Input Area - Modern & Focused */}
-          <div className="px-10 py-8 bg-white/50 backdrop-blur-sm border-t border-sage-100/50 shadow-[0_-4px_24px_rgba(0,0,0,0.02)]">
-            <form onSubmit={handleSend} className="space-y-6">
-              <div className="relative">
+          {/* Immersive Sticky Input Area */}
+          <_motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 md:p-10 lg:p-14 pt-0 md:p-0 lg:pt-0 bg-gradient-to-t from-cream via-cream/90 to-transparent backdrop-blur-sm sticky bottom-0"
+          >
+            <form
+              onSubmit={handleSend}
+              className="relative max-w-4xl mx-auto group"
+            >
+              <_motion.div
+                className="absolute -inset-4 bg-gradient-to-r from-primary/15 via-sage-200/10 to-primary/10 blur-3xl rounded-3xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-700"
+                layoutId="input-glow"
+              />
+              <div className="relative z-10 flex items-center gap-3">
                 <input
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Share your reflection or ask a question..."
-                  className="w-full bg-white border-2 border-sage-100 rounded-4xl py-5 pl-8 pr-16 text-sm focus:outline-none focus:ring-4 focus:ring-[#3a4d3f]/10 focus:border-[#3a4d3f] transition-all placeholder:text-sage-400 font-medium"
+                  onChange={(e) =>
+                    setInput(e.target.value)
+                  }
+                  placeholder="Share your reflection..."
+                  className="flex-1 bg-white/90 backdrop-blur-md border-2 border-sage-100/50 hover:border-sage-200/70 rounded-2xl py-4 md:py-6 pl-6 md:pl-10 pr-4 text-sm md:text-base focus:outline-none focus:ring-8 focus:ring-primary/15 focus:border-primary/50 transition-all shadow-lg hover:shadow-xl placeholder:text-sage-400 font-medium relative"
                   disabled={isTyping}
                 />
-                <button
+                <_motion.button
+                  whileHover={{
+                    scale: 1.08,
+                    rotate: 5,
+                  }}
+                  whileTap={{ scale: 0.95 }}
                   type="submit"
-                  disabled={!input.trim() || isTyping}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-[#3a4d3f] text-white rounded-xl disabled:opacity-30 hover:bg-[#2d3a30] transition-all flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105"
+                  disabled={
+                    !input.trim() || isTyping
+                  }
+                  className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-primary to-primary-dark text-white rounded-2xl disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center hover:shadow-lg shadow-2xl shadow-primary/40 transition-all relative overflow-hidden group shrink-0"
                 >
-                  {isTyping ? (
-                    <Loader2 className="animate-spin" size={20} />
-                  ) : (
-                    <Send size={20} />
-                  )}
-                </button>
-              </div>
-              <div className="flex items-center justify-center gap-3 opacity-50">
-                <div className="w-1 h-1 rounded-full bg-sage-400" />
-                <p className="text-[10px] text-center text-sage-400 uppercase font-black tracking-[0.3em]">
-                  Thoughtful, intentional dialogue
-                </p>
-                <div className="w-1 h-1 rounded-full bg-sage-400" />
+                  <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity" />
+                  {isTyping ?
+                    <Loader2
+                      className="animate-spin relative z-10"
+                      size={20}
+                    />
+                  : <Send
+                      size={24}
+                      className="relative z-10 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+                    />
+                  }
+                </_motion.button>
               </div>
             </form>
-          </div>
+            <_motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="flex items-center justify-center gap-2 md:gap-3 mt-4 md:mt-6 opacity-50 hover:opacity-100 transition-opacity"
+            >
+              <_motion.div
+                animate={{ scale: [1, 1.5, 1] }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                }}
+                className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full bg-primary"
+              />
+              <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.4em] text-sage-400">
+                Mindful Intelligence Sanctuary
+              </p>
+              <_motion.div
+                animate={{ scale: [1, 1.5, 1] }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  delay: 0.2,
+                }}
+                className="w-1 md:w-1.5 h-1 md:h-1.5 rounded-full bg-primary"
+              />
+            </_motion.div>
+          </_motion.div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={deleteSessionModal.isOpen}
+        onClose={() =>
+          setDeleteSessionModal({
+            isOpen: false,
+            id: null,
+          })
+        }
+        onConfirm={handleDeleteSession}
+        title="Archive Dialogue?"
+        message="This will permanently remove this conversation from your sanctuary."
+        confirmText="Archive"
+      />
+
+      <ConfirmModal
+        isOpen={deleteMessageModal.isOpen}
+        onClose={() =>
+          setDeleteMessageModal({
+            isOpen: false,
+            id: null,
+          })
+        }
+        onConfirm={handleDeleteMessage}
+        title="Discard Reflection?"
+        message="Are you sure you want to remove this message?"
+        confirmText="Discard"
+      />
     </ZenNav>
   );
 };

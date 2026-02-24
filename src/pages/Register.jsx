@@ -1,5 +1,5 @@
 import { motion as _motion } from "framer-motion";
-import { Mail, Lock, User, Sparkles, ChevronRight } from "lucide-react";
+import { Mail, Lock, User, Sparkles, ChevronRight, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
@@ -12,6 +12,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
@@ -19,146 +20,189 @@ const Register = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await authService.register({
-        fullName,
-        email,
-        password,
-      });
+      const response = await authService.register({ fullName, email, password });
       if (response.success) {
         login(response.data, response.data.token);
       } else {
-        setError(
-          response.message || "The path is currently blocked. Try again.",
-        );
+        setError(response.message || "Failed to create account. Try again.");
       }
     } catch (err) {
-      setError(
-        `The universe is busy right now. Please try again later. ${err.message}`,
-      );
+      setError("The universe is busy right now. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: 0.2 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="yoga-gradient min-h-screen flex items-center justify-center p-6 bg-[#f8f6f2]">
+    <div className="bg-gradient-to-br from-cream via-cream to-sage-50 min-h-screen flex items-center justify-center p-6 overflow-hidden relative">
+      {/* Animated background decorations */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[10%] left-[5%] w-[300px] h-[300px] bg-sage-200/10 rounded-full blur-[100px] animate-pulse" />
+        <div className="absolute bottom-[5%] right-[10%] w-[280px] h-[280px] bg-primary/8 rounded-full blur-[90px] animate-pulse animation-delay-2000" />
+      </div>
+
       <_motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
+        initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6 }}
-        className="bg-white p-10 md:p-16 rounded-[3rem] w-full max-w-xl shadow-[0_20px_80px_rgba(0,0,0,0.06)] border border-white"
+        className="relative z-10 w-full max-w-md"
       >
-        <header className="text-center mb-10 space-y-4">
-          <div className="inline-flex p-4 bg-sage-50 rounded-3xl text-[#3a4d3f] mb-2 shadow-sm">
-            <Sparkles size={32} />
-          </div>
-          <h2 className="text-4xl font-serif text-[#2d3a30]">Begin Journey</h2>
-          <p className="text-sage-400 font-black uppercase tracking-[0.3em] text-[10px]">
-            Create your spiritual identity today
-          </p>
-        </header>
-
-        {error && (
-          <_motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-red-50 border border-red-100 text-red-600 p-5 rounded-2xl mb-8 text-xs font-bold flex items-center gap-4 shadow-sm"
-          >
-            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            {error}
-          </_motion.div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-[11px] font-black text-sage-400 uppercase tracking-[0.25em] px-1 flex items-center gap-2">
-              <User size={12} /> Sacred Label (Full Name)
-            </label>
-            <input
-              type="text"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="input-field py-5!"
-              placeholder="Spiritual Name"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[11px] font-black text-sage-400 uppercase tracking-[0.25em] px-1 flex items-center gap-2">
-              <Mail size={12} /> Email Essence
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="input-field py-5!"
-              placeholder="yogi@sanctuary.com"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[11px] font-black text-sage-400 uppercase tracking-[0.25em] px-1 flex items-center gap-2">
-              <Lock size={12} /> Sacred Key (Password)
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="input-field py-5!"
-              placeholder="••••••••"
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary w-full flex items-center justify-center gap-4 group mt-4 py-5! shadow-2xl shadow-sage-200"
-          >
-            {loading ? (
-              "Manifesting..."
-            ) : (
-              <>
-                Start Free Path{" "}
-                <ChevronRight
-                  size={20}
-                  className="group-hover:translate-x-1 transition-transform"
-                />
-              </>
-            )}
-          </button>
-        </form>
-
-        <div className="relative my-10">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-sage-100"></div>
-          </div>
-          <div className="relative flex justify-center text-[10px] font-black uppercase tracking-[0.4em]">
-            <span className="px-6 bg-white text-sage-300">Fast Entry</span>
-          </div>
-        </div>
-
-        <SocialLoginButtons />
-
-        <footer className="text-center mt-12 pt-8 border-t border-sage-50 space-y-4">
-          <p className="text-sage-600 text-[13px] font-medium">
-            Already following the flow?{" "}
-            <Link
-              to="/login"
-              className="text-[#3a4d3f] font-black border-b-2 border-primary/20 hover:border-primary transition-all"
+        <_motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="bg-white/90 backdrop-blur-xl p-10 md:p-12 rounded-2xl w-full shadow-2xl shadow-primary/20 border border-white/80 space-y-8"
+        >
+          <_motion.header variants={itemVariants} className="text-center space-y-4">
+            <_motion.div
+              whileHover={{ scale: 1.15, rotate: -10 }}
+              className="inline-flex p-4 bg-gradient-to-br from-sage-200/20 to-sage-200/5 rounded-2xl text-primary mb-2 shadow-lg shadow-sage-200/20"
             >
-              Enter Sanctuary
-            </Link>
-          </p>
-          <Link
-            to="/"
-            className="text-[10px] font-black text-sage-300 uppercase tracking-[0.3em] flex items-center justify-center gap-2 hover:text-sage-500 transition-colors"
+              <Sparkles size={28} />
+            </_motion.div>
+            <h2 className="text-4xl font-serif text-primary-dark">Begin Your Journey</h2>
+            <p className="text-sage-500 font-bold uppercase tracking-widest text-[11px]">
+              Join thousands finding their flow
+            </p>
+          </_motion.header>
+
+          {error && (
+            <_motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-r from-red-50 to-red-50/50 text-red-600 p-4 rounded-xl text-xs font-bold border border-red-200/50 flex items-start gap-3"
+            >
+              <div className="text-red-500 mt-0.5">⚠</div>
+              <span>{error}</span>
+            </_motion.div>
+          )}
+
+          <_motion.form
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            onSubmit={handleSubmit}
+            className="space-y-5"
           >
-            Return to Essence
-          </Link>
-        </footer>
+            <_motion.div variants={itemVariants} className="space-y-3">
+              <label className="text-[11px] font-bold text-sage-600 uppercase tracking-widest ml-1 block">
+                Full Name
+              </label>
+              <div className="relative group">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 group-focus-within:text-primary transition-colors" size={18} />
+                <input
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="input-field pl-12"
+                  placeholder="Your Name"
+                  required
+                />
+              </div>
+            </_motion.div>
+
+            <_motion.div variants={itemVariants} className="space-y-3">
+              <label className="text-[11px] font-bold text-sage-600 uppercase tracking-widest ml-1 block">
+                Email Address
+              </label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 group-focus-within:text-primary transition-colors" size={18} />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="input-field pl-12"
+                  placeholder="yogi@flow.com"
+                  required
+                />
+              </div>
+            </_motion.div>
+
+            <_motion.div variants={itemVariants} className="space-y-3">
+              <label className="text-[11px] font-bold text-sage-600 uppercase tracking-widest ml-1 block">
+                Password
+              </label>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 group-focus-within:text-primary transition-colors" size={18} />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="input-field pl-12 pr-12"
+                  placeholder="••••••••"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-sage-400 hover:text-primary transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </_motion.div>
+
+            <_motion.button
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full flex items-center justify-center gap-2 group shadow-xl shadow-primary/30 mt-2 relative overflow-hidden"
+            >
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Manifesting Account...
+                </>
+              ) : (
+                <>
+                  Join Sanctuary <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
+            </_motion.button>
+          </_motion.form>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-sage-100"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <span className="px-4 bg-white text-sage-400 text-[10px] font-bold uppercase tracking-widest">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <_motion.div variants={itemVariants}>
+            <SocialLoginButtons />
+          </_motion.div>
+
+          <_motion.footer
+            variants={itemVariants}
+            className="text-center pt-6 border-t border-sage-100"
+          >
+            <p className="text-sage-600 text-sm">
+              Already practicing?{" "}
+              <Link to="/login" className="text-primary font-bold hover:text-primary-dark transition-colors duration-300">
+                Sign in here
+              </Link>
+            </p>
+          </_motion.footer>
+        </_motion.div>
       </_motion.div>
     </div>
   );

@@ -7,10 +7,11 @@ import {
   ChevronRight,
   Heart,
   Zap,
+  Brain,
+  Lightbulb,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion as _motion } from "framer-motion";
-import { Activity } from "react";
 
 const Landing = () => {
   const fadeInUp = {
@@ -18,195 +19,186 @@ const Landing = () => {
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true },
     transition: {
-      duration: 0.8,
+      duration: 0.6,
       ease: "easeOut",
     },
   };
 
+  const floatingAnimation = {
+    y: [0, -20, 0],
+    transition: {
+      duration: 3,
+      repeat: Infinity,
+      ease: "easeInOut",
+    },
+  };
+
   return (
-    <div className="yoga-gradient min-h-screen selection:bg-primary/30">
-      {/* Immersive Background Decor - Subtle & Professional */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] right-[-5%] w-[50%] h-[50%] bg-primary/3 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-5%] left-[-5%] w-[40%] h-[40%] bg-sage-200/10 blur-[100px] rounded-full" />
+    <div className="bg-gradient-to-br from-cream via-cream to-sage-50 min-h-screen selection:bg-primary/20 overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[5%] left-[10%] w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute top-[20%] right-[5%] w-[350px] h-[350px] bg-sage-200/10 rounded-full blur-[100px] animate-pulse animation-delay-2000" />
+        <div className="absolute bottom-[10%] left-[50%] w-[300px] h-[300px] bg-primary/8 rounded-full blur-[80px]" />
       </div>
 
       {/* Structured Navbar */}
-      <nav className="fixed top-8 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl z-50">
-        <div className="bg-white/80 backdrop-blur-2xl px-10 py-5 flex items-center justify-between border border-white rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.08)]">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-[#3a4d3f] rounded-xl flex items-center justify-center text-white shadow-lg">
-              <Leaf size={20} />
-            </div>
-            <span className="text-2xl font-serif text-[#2d3a30] tracking-tight">
-              YogaFlow <span className="text-[#3a4d3f] font-medium">AI</span>
-            </span>
-          </div>
-          <div className="hidden md:flex items-center gap-12 text-[11px] font-black uppercase tracking-[0.25em] text-sage-400">
-            <a
-              href="#philosophy"
-              className="hover:text-[#2d3a30] transition-colors"
-            >
-              Philosophy
-            </a>
-            <a
-              href="#ritual"
-              className="hover:text-[#2d3a30] transition-colors"
-            >
-              The Ritual
-            </a>
-            <Link
-              to="/login"
-              className="hover:text-[#2d3a30] transition-colors"
-            >
-              Log In
-            </Link>
-            <Link
-              to="/register"
-              className="btn-primary px-8! py-3.5! rounded-full!"
-            >
-              Begin Path
-            </Link>
-          </div>
-        </div>
-      </nav>
-
-      {/* Hero Section - High Contrast & Authority */}
-      <section className="relative pt-64 pb-32 px-8 max-w-6xl mx-auto flex flex-col items-center text-center">
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl z-50">
         <_motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1 }}
-          className="space-y-8 max-w-4xl"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="bg-white/70 backdrop-blur-2xl px-8 py-4 flex items-center justify-between border border-white/60 rounded-2xl shadow-2xl shadow-primary/5 hover:shadow-primary/15 transition-all duration-500 hover:border-white/80"
         >
-          <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-[#3a4d3f]/5 rounded-full text-[#3a4d3f] text-[10px] font-black uppercase tracking-[0.4em] mb-4 border border-[#3a4d3f]/10">
-            <Sparkles size={14} /> Ancient Wisdom x Modern AI
-          </div>
-          <h1 className="text-6xl md:text-8xl font-serif leading-none tracking-tight text-[#2d3a30]">
-            Your Digital{" "}
-            <span className="italic font-normal text-primary-dark">
-              Sanctuary
+          <div className="flex items-center gap-3">
+            <_motion.div
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              className="w-9 h-9 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30"
+            >
+              <Leaf size={18} />
+            </_motion.div>
+            <span className="text-xl font-serif text-primary-dark tracking-tight">
+              YogaFlow <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sage-600 font-medium">AI</span>
             </span>
-          </h1>
-          <p className="text-xl md:text-2xl text-sage-600 max-w-2xl mx-auto font-medium leading-relaxed">
-            Personalized yoga and mindfulness rituals crafted for your unique
-            journey. Designed for clarity, peace, and transformation.
-          </p>
-          <div className="pt-10 flex flex-col sm:flex-row items-center justify-center gap-8">
-            <Link
-              to="/register"
-              className="btn-primary flex items-center gap-4 group shadow-2xl"
-            >
-              Start Your Journey{" "}
-              <ArrowRight
-                size={20}
-                className="group-hover:translate-x-1 transition-transform"
-              />
-            </Link>
-            <Link
-              to="/login"
-              className="btn-secondary bg-transparent! border-sage-200"
-            >
-              Resume Your Flow
-            </Link>
+          </div>
+          <div className="hidden md:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-sage-400">
+            <a href="#philosophy" className="hover:text-primary transition-colors duration-300">Philosophy</a>
+            <a href="#ritual" className="hover:text-primary transition-colors duration-300">The Ritual</a>
+            <Link to="/login" className="hover:text-primary transition-colors duration-300">Log In</Link>
+            <Link to="/register" className="btn-primary px-6! py-2.5! rounded-full! text-[10px]! shadow-lg shadow-primary/30">Begin Path</Link>
           </div>
         </_motion.div>
+      </nav>
 
-        {/* High-End Visual Anchor */}
+      {/* Hero Section */}
+      <section className="relative pt-48 pb-20 px-8 max-w-6xl mx-auto flex flex-col items-center text-center z-10">
         <_motion.div
-          initial={{ opacity: 0, y: 60 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 1.2,
-            delay: 0.2,
-          }}
-          className="mt-32 relative w-full"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="space-y-8 max-w-4xl"
         >
-          <div className="bg-white p-5 rounded-[4rem] border border-white shadow-[0_60px_120px_-30px_rgba(45,61,48,0.25)] relative z-10">
-            <img
-              src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=1600"
-              alt="Deep Yoga Practice"
-              className="rounded-[3rem] w-full h-150 object-cover"
-            />
-          </div>
-          {/* Floating Data Point - High Contrast */}
-          <div className="absolute -bottom-12 -right-12 hidden lg:block z-20">
-            <_motion.div
-              animate={{ y: [0, -20, 0] }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="bg-[#2d3a30] p-10 rounded-[2.5rem] shadow-2xl border border-white/10"
+          <_motion.div
+            animate={floatingAnimation}
+            className="inline-flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-primary/10 to-sage-200/10 rounded-full text-primary text-[10px] font-bold uppercase tracking-widest border border-primary/20 shadow-lg shadow-primary/5"
+          >
+            <Sparkles size={14} className="animate-spin animation-duration-3000" /> AI-Powered Zen Sanctuary
+          </_motion.div>
+
+          <h1 className="text-6xl md:text-8xl font-serif leading-tight tracking-tight text-primary-dark">
+            Your Digital{" "}
+            <_motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className="italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary-dark to-sage-600"
             >
-              <div className="flex items-center gap-5">
-                <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-white">
-                  <Heart size={28} />
-                </div>
-                <div className="text-left">
-                  <p className="text-[11px] font-black text-white/40 uppercase tracking-widest">
-                    Ritual Insight
-                  </p>
-                  <p className="text-2xl font-serif text-white">
-                    Flowing Peace
-                  </p>
-                </div>
-              </div>
-            </_motion.div>
+              Sanctuary
+            </_motion.span>
+          </h1>
+
+          <_motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="text-lg md:text-xl text-sage-600 max-w-2xl mx-auto font-medium leading-relaxed"
+          >
+            Personalized yoga and mindfulness rituals powered by AI. Transform your practice with intelligent guidance designed for clarity, peace, and authentic growth.
+          </_motion.p>
+
+          <_motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="pt-8 flex flex-col sm:flex-row items-center justify-center gap-4"
+          >
+            <Link to="/register" className="btn-primary flex items-center gap-3 group shadow-xl shadow-primary/30 hover:shadow-primary/50 transform transition-all duration-300 hover:scale-105">
+              Start Your Journey <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <Link to="/login" className="btn-secondary border-sage-300/50 hover:border-primary/30 transition-all duration-300">
+              Resume Your Flow
+            </Link>
+          </_motion.div>
+        </_motion.div>
+
+        {/* Hero Image with Advanced Effects */}
+        <_motion.div
+          initial={{ opacity: 0, y: 50, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="mt-24 relative w-full max-w-5xl"
+        >
+          <_motion.div
+            className="absolute -inset-6 bg-gradient-to-br from-primary/20 via-sage-200/10 to-primary/10 rounded-[2.5rem] blur-3xl opacity-60"
+            animate={{ scale: [1, 1.05, 1], opacity: [0.5, 0.8, 0.5] }}
+            transition={{ duration: 4, repeat: Infinity }}
+          />
+          <div className="relative bg-white/60 backdrop-blur-xl p-6 rounded-[2.5rem] border border-white/80 shadow-2xl shadow-primary/20 hover:shadow-primary/40 transition-shadow duration-500 group overflow-hidden">
+            <img
+              src="https://images.pexels.com/photos/3752179/pexels-photo-3752179.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop"
+              alt="Yoga Meditation Practice"
+              className="rounded-[2rem] w-full h-[500px] object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/20 via-transparent to-transparent rounded-[2rem] pointer-events-none" />
           </div>
         </_motion.div>
       </section>
 
-      {/* Essence Section - Structured & Professional */}
-      <section id="philosophy" className="py-40 px-8 bg-white/40">
+      {/* Features Section */}
+      <section id="philosophy" className="py-32 px-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <header className="text-center mb-32 space-y-4">
-            <h2 className="text-5xl font-serif text-[#2d3a30]">
-              The Essence of Flow
-            </h2>
-            <div className="w-20 h-1.5 bg-[#3a4d3f] mx-auto rounded-full opacity-10" />
-            <p className="text-sage-500 font-bold uppercase tracking-[0.2em] text-[11px]">
-              Why over 10,000 yogis choose us
-            </p>
-          </header>
+          <_motion.header
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-20 space-y-4"
+          >
+            <h2 className="text-5xl font-serif text-primary-dark">The Essence of Flow</h2>
+            <p className="text-sage-500 font-bold uppercase tracking-widest text-[11px]">Trusted by thousands of practitioners worldwide</p>
+          </_motion.header>
 
-          <div className="grid md:grid-cols-3 gap-16">
+          <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                icon: <Target />,
-                title: "Personalized Action",
-                desc: "Our AI understands your goals, injuries, and aspirations to create the perfect ritual every time.",
+                icon: <Target size={28} />,
+                title: "Personalized Rituals",
+                desc: "AI that learns your body, goals, and preferences to craft perfectly tailored sessions every single time.",
+                color: "from-primary/20 to-primary/5",
               },
               {
-                icon: <Zap />,
-                title: "Instant Attunement",
-                desc: "Speak naturally to your guide. It adjusts your practice in real-time based on your feedback.",
+                icon: <Brain size={28} />,
+                title: "Intelligent Guidance",
+                desc: "Speak naturally to your AI guide. Real-time adjustments based on your body signals and feedback.",
+                color: "from-sage-300/20 to-sage-300/5",
               },
               {
-                icon: <Wind />,
-                title: "Mindful Breath",
-                desc: "Integrated pranayama sensors and guidance to ensure every movement is fueled by peace.",
+                icon: <Lightbulb size={28} />,
+                title: "Mindful Wisdom",
+                desc: "Ancient yoga principles merged with modern neuroscience for breakthrough growth and transformation.",
+                color: "from-orange-200/20 to-orange-100/5",
               },
             ].map((f, i) => (
               <_motion.div
                 key={i}
-                viewport={{ once: true }}
-                whileInView={{ opacity: 1, y: 0 }}
                 initial={{ opacity: 0, y: 30 }}
-                transition={{ delay: i * 0.2 }}
-                className="group flex flex-col items-center text-center space-y-8"
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15, duration: 0.6 }}
+                whileHover={{ y: -8 }}
+                className={`group relative overflow-hidden p-10 rounded-2xl bg-gradient-to-br ${f.color} border border-white/60 shadow-lg hover:shadow-2xl transition-all duration-500`}
               >
-                <div className="w-24 h-24 bg-white border border-sage-100 rounded-[2.5rem] flex items-center justify-center text-[#3a4d3f] shadow-xl group-hover:bg-[#3a4d3f] group-hover:text-white transition-all duration-500">
-                  {f.icon}
-                </div>
-                <div className="space-y-3">
-                  <h3 className="text-2xl font-serif text-[#2d3a30]">
-                    {f.title}
-                  </h3>
-                  <p className="text-sage-500 leading-relaxed text-sm font-medium">
-                    {f.desc}
-                  </p>
+                <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-30 transition-opacity duration-500" />
+                <div className="relative space-y-6 flex flex-col items-center text-center">
+                  <_motion.div
+                    whileHover={{ scale: 1.15, rotate: 10 }}
+                    className="w-20 h-20 bg-white/80 rounded-2xl flex items-center justify-center text-primary shadow-lg group-hover:shadow-xl transition-all duration-500"
+                  >
+                    {f.icon}
+                  </_motion.div>
+                  <div className="space-y-3">
+                    <h3 className="text-2xl font-serif text-primary-dark group-hover:text-primary transition-colors duration-300">{f.title}</h3>
+                    <p className="text-sage-600 leading-relaxed text-sm">{f.desc}</p>
+                  </div>
                 </div>
               </_motion.div>
             ))}
@@ -214,190 +206,40 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Ritual Roadmap - Clean & Linear */}
-      <section id="ritual" className="py-40 px-8 max-w-6xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-32 items-center">
-          <div className="space-y-16">
-            <div className="space-y-4">
-              <h2 className="text-5xl md:text-7xl font-serif text-[#2d3a30] leading-none">
-                Your Path to <br /> Balance
-              </h2>
-              <p className="text-sage-500 font-medium">
-                A structured ritual for the modern spiritual seeker.
-              </p>
-            </div>
-
-            <div className="space-y-12">
-              {[
-                {
-                  n: "01",
-                  t: "Seek the Guide",
-                  d: "Initialize your identity and share your current intentions and vulnerabilities.",
-                },
-                {
-                  n: "02",
-                  t: "Enter the Flow",
-                  d: "Commune with your AI guide to manifest a daily ritual that fits your schedule.",
-                },
-                {
-                  n: "03",
-                  t: "Witness Growth",
-                  d: "Visualize your transformation as you gain strength, flexibility, and inner peace.",
-                },
-              ].map((step, i) => (
-                <_motion.div
-                  key={i}
-                  {...fadeInUp}
-                  className="flex gap-10 group"
-                >
-                  <div className="text-5xl font-serif text-sage-200 group-hover:text-[#3a4d3f]/20 transition-colors duration-500 leading-none">
-                    {step.n}
-                  </div>
-                  <div className="space-y-2">
-                    <h4 className="text-2xl font-bold text-[#2d3a30] tracking-tight">
-                      {step.t}
-                    </h4>
-                    <p className="text-sage-500 text-sm font-medium leading-relaxed">
-                      {step.d}
-                    </p>
-                  </div>
-                </_motion.div>
-              ))}
-            </div>
-          </div>
-
-          <div className="relative">
-            <div className="bg-white p-5 rounded-[4rem] shadow-2xl border border-sage-50 transform rotate-2 hover:rotate-0 transition-transform duration-1000">
-              <img
-                src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=1000"
-                className="rounded-[3rem] h-150 object-cover"
-                alt="Pure Meditation"
-              />
-            </div>
-            {/* Minimal Stat Card */}
-            <div className="absolute top-1/2 -left-16 -translate-y-1/2 flex flex-col gap-6">
-              <div className="w-20 h-20 bg-[#3a4d3f] rounded-3xl flex items-center justify-center text-white shadow-2xl">
-                <Activity size={32} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Final Action - Authority & Class */}
-      <section className="py-40 px-8">
-        <_motion.div
-          {...fadeInUp}
-          className="max-w-5xl mx-auto bg-[#2d3a30] rounded-[5rem] p-20 md:p-32 text-center text-white shadow-[0_50px_100px_-20px_rgba(45,61,48,0.5)] border border-white/10"
-        >
-          <div className="max-w-3xl mx-auto space-y-12">
-            <h2 className="text-5xl md:text-7xl font-serif mb-8">
-              Begin Your Ritual Today.
-            </h2>
-            <p className="text-sage-300 text-xl font-medium leading-relaxed">
-              Step into the sanctuary and discover the perfect harmony of mind,
-              body, and wisdom.
-            </p>
-            <Link
-              to="/register"
-              className="btn-secondary bg-white! text-[#2d3a30]! px-16! py-6! flex items-center justify-center gap-4 w-fit mx-auto group shadow-2xl hover:scale-105 transition-transform"
-            >
-              Begin Free Path{" "}
-              <ChevronRight
-                size={24}
-                className="group-hover:translate-x-1 transition-transform"
-              />
+      {/* CTA Section */}
+      <_motion.section
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        className="py-24 px-8 relative z-10"
+      >
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          <h2 className="text-4xl font-serif text-primary-dark">Ready to Transform?</h2>
+          <p className="text-lg text-sage-600">Begin your journey to inner peace and physical vitality with personalized AI-guided yoga.</p>
+          <_motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="flex flex-col sm:flex-row justify-center gap-4"
+          >
+            <Link to="/register" className="btn-primary flex items-center justify-center gap-2 shadow-xl shadow-primary/30 transform transition-all hover:scale-105">
+              Get Started Now <ArrowRight size={20} />
             </Link>
-          </div>
-        </_motion.div>
-      </section>
-
-      {/* Clean Footer */}
-      <footer className="py-32 px-10 border-t border-sage-100 bg-white/30 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-20">
-          <div className="col-span-2 space-y-10">
-            <div className="flex items-center gap-5">
-              <div className="w-12 h-12 bg-[#3a4d3f] rounded-2xl flex items-center justify-center text-white shadow-lg">
-                <Leaf size={24} />
-              </div>
-              <span className="text-3xl font-serif text-[#2d3a30]">
-                YogaFlow
-              </span>
-            </div>
-            <p className="text-sage-500 text-lg font-medium leading-relaxed max-w-sm">
-              Creating digital sanctuaries for the modern practitioner. May your
-              path be illuminated and your mind be still.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-10 col-span-2">
-            <div>
-              <h5 className="text-[11px] font-black text-sage-300 uppercase tracking-[0.3em] mb-10">
-                Exploration
-              </h5>
-              <ul className="space-y-6 text-sm font-black text-[#2d3a30] uppercase tracking-tighter">
-                <li>
-                  <Link
-                    to="/philosophy"
-                    className="hover:text-primary-dark transition-colors"
-                  >
-                    Philosophy
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/rituals"
-                    className="hover:text-primary-dark transition-colors"
-                  >
-                    The Ritual
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/login"
-                    className="hover:text-primary-dark transition-colors"
-                  >
-                    Enter
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="text-[11px] font-black text-sage-300 uppercase tracking-[0.3em] mb-10">
-                Connection
-              </h5>
-              <ul className="space-y-6 text-sm font-black text-[#2d3a30] uppercase tracking-tighter">
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-dark transition-colors"
-                  >
-                    Presence
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-dark transition-colors"
-                  >
-                    Vibe Check
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-primary-dark transition-colors"
-                  >
-                    Privacy
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
+          </_motion.div>
         </div>
-        <div className="max-w-6xl mx-auto pt-32 text-center">
-          <p className="text-[10px] font-black text-sage-200 uppercase tracking-[0.5em]">
-            &copy; 2024 YogaFlow Sanctuary &bull; Unified Peace Ritual
+      </_motion.section>
+
+      {/* Footer */}
+      <footer className="py-16 px-8 border-t border-sage-200/50 bg-white/30 backdrop-blur-sm relative z-10">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-dark rounded-lg flex items-center justify-center text-white">
+              <Leaf size={16} />
+            </div>
+            <span className="text-lg font-serif text-primary-dark">YogaFlow AI</span>
+          </div>
+          <p className="text-[11px] font-bold text-sage-400 uppercase tracking-widest">
+            &copy; 2024 YogaFlow Sanctuary &bull; Modern AI-Powered Mindfulness
           </p>
         </div>
       </footer>

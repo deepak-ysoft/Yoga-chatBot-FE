@@ -8,6 +8,7 @@ import {
   MessageSquare,
   Target,
   User,
+  Leaf,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -32,283 +33,356 @@ const Dashboard = () => {
     fetchSessions();
   }, []);
 
-  const welcomeName = user?.fullName?.split(" ")[0] || "Yogi";
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
 
   return (
     <ZenNav>
-      <div className="min-h-[calc(100vh-80px)] pb-20">
-        <div className="max-w-7xl mx-auto px-8 space-y-20 pt-12">
-          {/* Immersive Header - Elevated Design */}
-          <_motion.div
-            initial={{ opacity: 0, y: -30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="space-y-8"
-          >
-            <div className="space-y-4">
-              <h1 className="text-6xl md:text-7xl font-serif text-[#2d3a30] leading-none tracking-tight">
-                Namaste,{" "}
-                <span className="italic font-normal text-[#3a4d3f]">
-                  {welcomeName}
-                </span>
-              </h1>
-              <div className="w-20 h-1.5 bg-[#3a4d3f] rounded-full opacity-30" />
-              <p className="text-sage-500 font-bold uppercase tracking-[0.25em] text-[11px] max-w-md">
-                Welcome to your digital sanctuary. Continue your transformative
-                journey
-              </p>
-            </div>
+      {/* Enhanced Animated Background Decor */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[5%] left-[-5%] w-[450px] h-[450px] bg-primary/8 rounded-full blur-[130px] animate-pulse" />
+        <div className="absolute bottom-[-15%] right-[-8%] w-[400px] h-[400px] bg-sage-200/12 rounded-full blur-[110px] animate-pulse animation-delay-2000" />
+        <div className="absolute top-[50%] left-[50%] w-[300px] h-[300px] bg-primary/5 rounded-full blur-[100px]" />
+      </div>
 
-            <div className="flex items-center gap-3 w-fit">
-              <div className="w-3 h-3 rounded-full bg-green-500 shadow-lg shadow-green-500/50 animate-pulse" />
-              <span className="text-[11px] font-black text-sage-600 uppercase tracking-[0.25em]">
-                Synchronized & Aligned
-              </span>
-            </div>
-          </_motion.div>
+      <_motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="max-w-6xl mx-auto px-4 md:px-8 py-8 md:py-16 space-y-16 relative z-10"
+      >
+        {/* Modern Hero with Immersive Image and Enhanced Effects */}
+        <_motion.div variants={itemVariants} className="relative group">
+          <div className="absolute -inset-3 bg-gradient-to-r from-primary/25 via-sage-200/15 to-primary/20 blur-3xl rounded-[2.5rem] group-hover:from-primary/40 group-hover:via-sage-200/25 group-hover:to-primary/30 transition-colors duration-700 opacity-70 group-hover:opacity-100" />
+          <div className="relative h-[400px] md:h-[480px] rounded-card overflow-hidden shadow-2xl shadow-primary/20 border border-white/50 group hover:shadow-primary/40 transition-all duration-500">
+            <img
+              src="https://images.pexels.com/photos/3756517/pexels-photo-3756517.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop"
+              alt="Daily Yoga Practice"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/60 via-primary-dark/35 to-transparent group-hover:from-primary-dark/50 transition-all duration-500" />
 
-          <div className="grid lg:grid-cols-3 gap-12">
-            {/* Hero CTA Card - Main Focus */}
             <_motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="lg:col-span-2 relative overflow-hidden group"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="absolute inset-0 flex flex-col justify-center px-8 md:px-16 space-y-6 md:space-y-8"
             >
-              <div className="absolute inset-0  from-[#3a4d3f]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-              <div className="relative backdrop-blur-md p-16 rounded-[4rem] border border-white shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
-                {/* Decorative Icon */}
-                <div className="absolute top-0 right-0 p-12 opacity-[0.02] group-hover:scale-125 transition-transform duration-1000">
-                  <Sparkles size={280} />
-                </div>
+              <div className="space-y-4">
+                <_motion.div
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-white/15 backdrop-blur-xl rounded-full text-white/95 text-[10px] font-bold uppercase tracking-widest border border-white/30 shadow-lg shadow-white/20 w-fit"
+                >
+                  <Sparkles
+                    size={13}
+                    className="animate-spin animation-duration-3000"
+                  />{" "}
+                  Personalized Daily Flow
+                </_motion.div>
+                <h1 className="text-4xl md:text-6xl font-serif text-white max-w-xl leading-[1.1] drop-shadow-lg">
+                  Begin Your{" "}
+                  <span className="italic font-normal bg-gradient-to-r from-white via-white/90 to-cream bg-clip-text text-transparent">
+                    Daily Ritual
+                  </span>
+                </h1>
+                <p className="text-white/85 text-sm md:text-lg max-w-md font-medium drop-shadow-md">
+                  Reconnect with your body and breath in our immersive AI-guided
+                  sanctuary.
+                </p>
+              </div>
 
-                <div className="relative z-10 space-y-8 max-w-2xl">
-                  <div className="space-y-4">
-                    <div className="inline-flex items-center gap-3 px-5 py-2.5 bg-[#3a4d3f]/5 rounded-full text-[#3a4d3f] text-[10px] font-black uppercase tracking-[0.4em] border border-[#3a4d3f]/10">
-                      <Sparkles size={14} /> AI-Powered Guidance
-                    </div>
-                    <h2 className="text-5xl font-serif text-[#2d3a30] leading-tight">
-                      Begin Your Daily Ritual
-                    </h2>
-                    <p className="text-lg text-sage-600 leading-relaxed font-medium">
-                      Connect with your personalized guide to synchronize your
-                      body and spirit. Receive transformative insights tailored
-                      to your unique journey.
-                    </p>
-                  </div>
-
+              <_motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="flex flex-col sm:flex-row gap-4 pt-4"
+              >
+                <_motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                >
                   <Link
                     to="/chat"
-                    className="btn-primary inline-flex items-center gap-4 px-12! py-5! group text-lg shadow-2xl shadow-sage-200 hover:scale-105 transition-transform"
+                    className="bg-white text-primary-dark hover:bg-cream px-8 py-4 rounded-button font-bold flex items-center justify-center gap-2 transition-all shadow-xl shadow-white/30 hover:shadow-white/50 relative overflow-hidden group"
                   >
-                    Enter Mindful Flow{" "}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <span className="relative">Enter mindful flow</span>{" "}
                     <ArrowRight
-                      size={22}
-                      className="group-hover:translate-x-2 transition-transform"
+                      size={18}
+                      className="group-hover:translate-x-1 transition-transform"
                     />
                   </Link>
-                </div>
+                </_motion.div>
+                <_motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Link
+                    to="/profile"
+                    className="bg-white/15 backdrop-blur-md text-white border border-white/40 hover:bg-white/25 hover:border-white/60 px-8 py-4 rounded-button font-bold flex items-center justify-center transition-all shadow-lg shadow-white/10"
+                  >
+                    View My progress
+                  </Link>
+                </_motion.div>
+              </_motion.div>
+            </_motion.div>
+          </div>
+        </_motion.div>
+
+        {/* Dynamic Status & Grid */}
+        <div className="grid lg:grid-cols-3 gap-8 items-start">
+          <div className="lg:col-span-2 space-y-12">
+            {/* Focus Grid */}
+            <_motion.div variants={itemVariants} className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-serif text-primary-dark">
+                  Today's Practice
+                </h2>
+                <div className="w-12 h-1 bg-primary/10 rounded-full" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[
+                  {
+                    title: "Flexibility",
+                    icon: <Sparkles className="text-orange-400" />,
+                    level: "Level 1",
+                    gradient: "from-orange-100/40 to-orange-50/20",
+                  },
+                  {
+                    title: "Strength",
+                    icon: <Target className="text-red-400" />,
+                    level: "Level 2",
+                    gradient: "from-red-100/40 to-red-50/20",
+                  },
+                  {
+                    title: "Stress Relief",
+                    icon: <Leaf className="text-teal-400" />,
+                    level: "Mastery",
+                    gradient: "from-teal-100/40 to-teal-50/20",
+                  },
+                ].map((item, i) => (
+                  <_motion.button
+                    key={item.title}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    whileHover={{ y: -8, scale: 1.02 }}
+                    className={`group relative p-8 rounded-2xl flex flex-col items-center text-center space-y-4 bg-gradient-to-br ${item.gradient} border border-white/60 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden`}
+                  >
+                    <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
+                    <_motion.div
+                      whileHover={{ scale: 1.15, rotate: 8 }}
+                      className="w-16 h-16 bg-white/80 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all relative z-10"
+                    >
+                      {item.icon}
+                    </_motion.div>
+                    <div className="space-y-2 relative z-10">
+                      <h3 className="font-bold text-sage-800 text-lg">
+                        {item.title}
+                      </h3>
+                      <p className="text-[10px] text-sage-500 uppercase tracking-widest font-bold">
+                        {item.level}
+                      </p>
+                    </div>
+                  </_motion.button>
+                ))}
               </div>
             </_motion.div>
 
-            {/* Quick Stats Sidebar */}
-            <_motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="space-y-6"
-            >
-              <div className="bg-white/60 backdrop-blur-md p-10 rounded-[3rem] border border-white shadow-lg space-y-8">
-                <div className="space-y-3">
-                  <p className="text-[11px] font-black text-sage-400 uppercase tracking-[0.3em]">
-                    Current Status
-                  </p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-lg font-serif text-[#2d3a30]">
-                      Fully Attuned
-                    </span>
-                  </div>
-                </div>
-
-                <div className="pt-6 border-t border-sage-100 space-y-3">
-                  <p className="text-[11px] font-black text-sage-400 uppercase tracking-[0.3em]">
-                    Your Level
-                  </p>
-                  <p className="text-lg font-bold text-primary-dark">
-                    Mindfulness Level 1
-                  </p>
-                </div>
+            {/* Recent Reflections */}
+            <_motion.div variants={itemVariants} className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-serif text-primary-dark">
+                  Recent Reflections
+                </h2>
+                <Link
+                  to="/chat"
+                  className="text-xs font-bold text-primary hover:text-primary-dark transition-colors uppercase tracking-[0.2em]"
+                >
+                  View History
+                </Link>
               </div>
-
-              {/* Quick Access */}
-              <div className="bg-linear-to-br from-[#3a4d3f] to-[#2d3a30] p-10 rounded-[3rem] border border-white/10 shadow-2xl text-white space-y-6">
-                <div>
-                  <p className="text-[11px] font-black text-white/60 uppercase tracking-[0.3em] mb-3">
-                    Quick Access
-                  </p>
-                  <div className="space-y-3">
-                    <Link
-                      to="/profile"
-                      className="flex items-center gap-3 p-3 rounded-2xl bg-white/10 hover:bg-white/20 transition-colors group"
+              <div className="grid gap-4">
+                {loading ? (
+                  [1, 2].map((i) => (
+                    <_motion.div
+                      key={i}
+                      animate={{ backgroundPosition: ["200% 0", "-200% 0"] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="h-24 bg-gradient-to-r from-white/30 via-white/50 to-white/30 rounded-2xl border border-white/50 skeleton-loading"
+                    />
+                  ))
+                ) : sessions.length > 0 ? (
+                  sessions.slice(0, 3).map((session, idx) => (
+                    <_motion.div
+                      key={session.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.1 }}
                     >
-                      <User size={18} />
-                      <span className="text-sm font-medium">View Profile</span>
-                      <ArrowRight
-                        size={16}
-                        className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
-                      />
-                    </Link>
-                  </div>
-                </div>
+                      <Link
+                        to={`/chat?session=${session.id}`}
+                        className="group flex items-center justify-between p-6 bg-gradient-to-r from-white/80 to-white/60 border border-sage-100/60 rounded-2xl hover:shadow-xl hover:shadow-primary/20 hover:border-primary/30 transition-all duration-300 overflow-hidden relative"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="flex items-center gap-5 relative z-10">
+                          <_motion.div
+                            whileHover={{ scale: 1.15, rotate: 5 }}
+                            className="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/10 rounded-xl flex items-center justify-center text-primary group-hover:from-primary group-hover:to-primary-dark group-hover:text-white transition-all shadow-md"
+                          >
+                            <MessageSquare size={20} />
+                          </_motion.div>
+                          <div className="space-y-1">
+                            <h4 className="font-bold text-sage-800 group-hover:text-primary transition-colors duration-300">
+                              {session.title || "Spiritual Dialogue"}
+                            </h4>
+                            <p className="text-[10px] text-sage-400 font-bold uppercase tracking-widest">
+                              {new Date(session.createdAt).toLocaleDateString()}{" "}
+                              &bull; 15 min session
+                            </p>
+                          </div>
+                        </div>
+                        <ArrowRight
+                          size={20}
+                          className="text-sage-300 group-hover:text-primary group-hover:translate-x-1 transition-all relative z-10"
+                        />
+                      </Link>
+                    </_motion.div>
+                  ))
+                ) : (
+                  <_motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="p-16 text-center bg-gradient-to-br from-white/40 to-white/20 border border-dashed border-sage-200/50 rounded-2xl"
+                  >
+                    <p className="text-sage-500 italic text-lg">
+                      No dialogues recorded yet. Start your journey.
+                    </p>
+                  </_motion.div>
+                )}
               </div>
             </_motion.div>
           </div>
 
-          {/* Goals Grid Section */}
+          {/* Right Sidebar - Status & Metrics */}
           <_motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="space-y-8"
+            variants={itemVariants}
+            className="space-y-8 sticky top-24"
           >
-            <div className="space-y-2">
-              <h3 className="text-2xl font-serif text-[#2d3a30] flex items-center gap-3">
-                <Target size={24} />
-                Your Current Intentions
-              </h3>
-              <div className="w-16 h-1 bg-[#3a4d3f]/20 rounded-full" />
-            </div>
+            <_motion.div
+              className="bg-gradient-to-br from-primary-dark via-primary to-primary-dark p-8 rounded-2xl text-white space-y-8 shadow-2xl shadow-primary/30 relative overflow-hidden group hover:shadow-primary/50 transition-all duration-500"
+              whileHover={{ scale: 1.02 }}
+            >
+              <_motion.div
+                className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-15 group-hover:scale-125 transition-all duration-700"
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 5, repeat: Infinity }}
+              >
+                <Leaf size={140} />
+              </_motion.div>
 
-            {user?.goals?.split(", ").filter((g) => g).length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {user?.goals
-                  ?.split(", ")
-                  .filter((g) => g)
-                  .map((goal, i) => (
-                    <_motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.05 }}
-                      className="group"
-                    >
-                      <div className="h-full bg-white/70 backdrop-blur-sm border border-white/80 p-8 rounded-4xl shadow-lg hover:shadow-xl hover:bg-white transition-all duration-300 flex flex-col items-center text-center space-y-4">
-                        <div className="w-12 h-12 bg-linear-to-br from-[#3a4d3f]/10 to-[#2d3a30]/10 rounded-full flex items-center justify-center group-hover:bg-[#3a4d3f]/20 transition-colors">
-                          <div className="w-2.5 h-2.5 rounded-full bg-[#3a4d3f]" />
-                        </div>
-                        <span className="text-sm font-bold text-sage-700 group-hover:text-primary-dark transition-colors">
-                          {goal}
-                        </span>
-                      </div>
-                    </_motion.div>
-                  ))}
-              </div>
-            ) : (
-              <div className="text-center py-16 px-8 bg-white/40 border-2 border-dashed border-sage-200 rounded-[3rem]">
-                <p className="text-sage-500 italic font-medium mb-4">
-                  No intentions set yet
-                </p>
-                <Link
-                  to="/profile"
-                  className="text-[#3a4d3f] font-bold text-sm hover:underline"
-                >
-                  Add intentions in your profile
-                </Link>
-              </div>
-            )}
-          </_motion.div>
-
-          {/* Recent Sessions */}
-          <_motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="space-y-8"
-          >
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <h3 className="text-2xl font-serif text-[#2d3a30] flex items-center gap-3">
-                  <History size={24} />
-                  Past Reflections
+              <div className="space-y-6 relative z-10">
+                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-primary-light/70">
+                  Practice Essence
                 </h3>
-                <div className="w-16 h-1 bg-[#3a4d3f]/20 rounded-full" />
-              </div>
-              {sessions.length > 0 && (
-                <Link
-                  to="/chat"
-                  className="text-[11px] font-black text-[#3a4d3f] uppercase tracking-[0.3em] hover:underline flex items-center gap-2 group"
-                >
-                  View All
-                  <ArrowRight
-                    size={14}
-                    className="group-hover:translate-x-1 transition-transform"
-                  />
-                </Link>
-              )}
-            </div>
 
-            {loading ? (
-              <div className="grid gap-4">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="h-24 bg-white/50 rounded-3xl animate-pulse border border-sage-100"
-                  />
-                ))}
-              </div>
-            ) : sessions.length > 0 ? (
-              <div className="grid gap-4">
-                {sessions.slice(0, 5).map((session) => (
-                  <_motion.div
-                    key={session.id}
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                  >
-                    <Link
-                      to={`/chat?session=${session.id}`}
-                      className="group block bg-white/70 backdrop-blur-sm border border-white/80 p-6 rounded-4xl shadow-lg hover:shadow-xl hover:border-[#3a4d3f]/30 transition-all duration-300"
+                <div className="space-y-8">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-2">
+                      <p className="text-xs text-primary-light/60 font-bold">
+                        Current State
+                      </p>
+                      <p className="text-2xl font-serif text-white">
+                        Harmonized
+                      </p>
+                    </div>
+                    <_motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="w-12 h-12 bg-white/15 rounded-full flex items-center justify-center shadow-lg"
                     >
-                      <div className="flex items-center gap-6">
-                        <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-[#3a4d3f]/10 to-[#2d3a30]/10 flex items-center justify-center text-[#3a4d3f] group-hover:bg-[#3a4d3f] group-hover:text-white transition-all duration-300 shadow-sm">
-                          <MessageSquare size={20} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-sage-900 group-hover:text-[#3a4d3f] transition-colors truncate">
-                            {session.title || "Spiritual Dialogue"}
-                          </h4>
-                          <p className="text-[11px] font-black text-sage-400 uppercase tracking-[0.2em] mt-1">
-                            {new Date(session.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <ArrowRight
-                          size={18}
-                          className="text-sage-300 group-hover:text-[#3a4d3f] group-hover:translate-x-1 transition-all shrink-0"
-                        />
-                      </div>
-                    </Link>
-                  </_motion.div>
+                      <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50" />
+                    </_motion.div>
+                  </div>
+
+                  <div className="space-y-3 bg-white/10 p-4 rounded-xl backdrop-blur-sm">
+                    <div className="flex justify-between text-xs font-bold text-primary-light/70">
+                      <span>Weekly Goal</span>
+                      <span>85%</span>
+                    </div>
+                    <_motion.div
+                      className="h-2.5 bg-white/10 rounded-full overflow-hidden"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    >
+                      <_motion.div
+                        className="h-full bg-gradient-to-r from-primary-light via-white to-primary-light rounded-full shadow-[0_0_20px_rgba(255,255,255,0.5)]"
+                        initial={{ width: 0 }}
+                        animate={{ width: "85%" }}
+                        transition={{ duration: 1.5 }}
+                      />
+                    </_motion.div>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-4">
+                    {[1, 2, 3, 4, 5, 6, 7].map((d) => (
+                      <_motion.div
+                        key={d}
+                        initial={{ height: 0 }}
+                        animate={{ height: 24 }}
+                        transition={{ delay: d * 0.1 }}
+                        className={`flex-1 rounded-md ${d <= 5 ? "bg-gradient-to-t from-primary-light/50 to-primary-light/20" : "bg-white/5"} transition-all`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </_motion.div>
+
+            <div className="bg-gradient-to-br from-white/90 via-white/85 to-cream/80 p-8 rounded-2xl space-y-6 shadow-lg border border-white/60 hover:shadow-xl transition-all duration-300">
+              <h3 className="text-xs font-black uppercase tracking-[0.3em] text-sage-600">
+                Quick Rituals
+              </h3>
+              <div className="space-y-3">
+                {[
+                  "Mindful Breathing",
+                  "Gentle Morning",
+                  "Solar Salutation",
+                ].map((r, idx) => (
+                  <_motion.button
+                    key={r}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    whileHover={{ x: 8, scale: 1.02 }}
+                    className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-cream/80 to-cream/50 rounded-xl text-sage-700 text-sm font-bold hover:from-primary/15 hover:to-primary/10 hover:text-primary transition-all group shadow-sm hover:shadow-md"
+                  >
+                    <span>{r}</span>
+                    <ArrowRight
+                      size={14}
+                      className="opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all"
+                    />
+                  </_motion.button>
                 ))}
               </div>
-            ) : (
-              <div className="text-center py-16 px-8 bg-white/40 border-2 border-dashed border-sage-200 rounded-[3rem]">
-                <Sparkles size={40} className="mx-auto mb-4 text-sage-300" />
-                <p className="text-sage-500 italic font-medium mb-4">
-                  No reflections captured yet
-                </p>
-                <Link
-                  to="/chat"
-                  className="text-[#3a4d3f] font-bold text-sm hover:underline"
-                >
-                  Begin your first dialogue
-                </Link>
-              </div>
-            )}
+            </div>
           </_motion.div>
         </div>
-      </div>
+      </_motion.div>
     </ZenNav>
   );
 };

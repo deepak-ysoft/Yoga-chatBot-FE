@@ -11,6 +11,7 @@ import {
   Shield,
   Activity,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import api from "../services/api";
 
@@ -55,260 +56,219 @@ const Profile = () => {
 
   return (
     <ZenNav>
-      <div className="min-h-[calc(100vh-80px)] pb-20">
-        <div className="max-w-7xl mx-auto px-8 space-y-20 pt-12">
-          {/* Elevated Header */}
-          <_motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-4 text-center max-w-2xl mx-auto"
-          >
-            <div className="space-y-4">
-              <h1 className="text-6xl md:text-7xl font-serif text-[#2d3a30] leading-none tracking-tight">
-                Spiritual Identity
-              </h1>
-              <div className="w-20 h-1.5 bg-[#3a4d3f] rounded-full opacity-30 mx-auto" />
-              <p className="text-lg text-sage-500 font-medium max-w-xl mx-auto">
-                The reflection of your journey in the sanctuary. Refine your
-                essence and align with your deepest intentions.
-              </p>
-            </div>
-          </_motion.div>
+      {/* Enhanced Background Animations */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[10%] right-[10%] w-[350px] h-[350px] bg-primary/8 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[10%] left-[5%] w-[300px] h-[300px] bg-sage-200/10 rounded-full blur-[100px] animate-pulse animation-delay-2000" />
+      </div>
 
-          <div className="grid lg:grid-cols-2 gap-16 items-start">
-            {/* Identity Card - Elevated & Modern */}
+      <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-16 relative z-10">
+        <div className="grid lg:grid-cols-3 gap-8 md:gap-12 items-start">
+          {/* Profile Card - Immersive Design */}
+          <div className="lg:col-span-1">
             <_motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="sticky top-32"
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              className="bg-gradient-to-br from-white/95 via-white/90 to-cream/80 rounded-2xl shadow-2xl shadow-primary/15 border border-white/80 overflow-hidden text-center group hover:shadow-primary/30 transition-all duration-500"
             >
-              <div className="bg-white/70 backdrop-blur-md p-12 rounded-[4rem] border border-white/80 shadow-[0_20px_60px_rgba(0,0,0,0.08)] space-y-10 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-12 opacity-[0.03] group-hover:scale-125 transition-transform duration-1000">
-                  <Shield size={200} />
+              {/* Card Header with Zen Image */}
+              <div className="h-40 relative overflow-hidden group/header">
+                <img
+                  src="https://images.pexels.com/photos/3752173/pexels-photo-3752173.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop"
+                  alt="Zen Sanctuary"
+                  className="w-full h-full object-cover grayscale opacity-50 group-hover/header:opacity-70 group-hover/header:scale-110 transition-all duration-1000"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary-dark/20 to-white" />
+              </div>
+
+              <div className="px-6 pb-10 -mt-20 relative space-y-6">
+                <_motion.div
+                  className="relative inline-block mx-auto"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <_motion.div
+                    animate={{ boxShadow: ['0 0 0 0 rgba(31, 61, 43, 0.3)', '0 0 0 15px rgba(31, 61, 43, 0)'] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="w-32 h-32 rounded-full bg-gradient-to-br from-primary/20 via-cream to-cream p-1 shadow-xl relative"
+                  >
+                    <div className="w-full h-full rounded-full bg-gradient-to-br from-white to-cream flex items-center justify-center text-5xl font-serif text-primary border-2 border-primary/20 font-bold">
+                      {user?.fullName?.charAt(0)?.toUpperCase()}
+                    </div>
+                  </_motion.div>
+                  <_motion.button
+                    whileHover={{ scale: 1.15, rotate: 5 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="absolute bottom-0 right-0 p-2.5 bg-white rounded-full shadow-lg border-2 border-primary/20 text-primary hover:text-white hover:bg-primary transition-all"
+                  >
+                    <Camera size={18} />
+                  </_motion.button>
+                </_motion.div>
+
+                <div className="space-y-2">
+                  <h2 className="text-3xl font-bold text-primary-dark tracking-tight">{user?.fullName}</h2>
+                  <p className="text-sm text-sage-500 font-medium">{user?.email}</p>
                 </div>
 
-                <div className="flex flex-col items-center space-y-8 relative z-10">
-                  {/* Avatar */}
-                  <div className="relative group/avatar">
+                <div className="pt-6 border-t border-sage-100/50 space-y-6">
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {formData.goals.map((goal, i) => (
+                      <_motion.span
+                        key={i}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="px-4 py-2 bg-gradient-to-r from-primary/15 to-primary/5 text-primary text-[10px] font-bold uppercase tracking-widest rounded-full border border-primary/20 shadow-sm hover:shadow-primary/20 transition-all"
+                      >
+                        {goal}
+                      </_motion.span>
+                    ))}
+                  </div>
+                  <_motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="bg-gradient-to-br from-sage-100/40 to-cream/60 p-5 rounded-2xl space-y-3 border border-sage-100/50"
+                  >
+                    <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-sage-600">
+                      <span>Vitality Status</span>
+                      <span className="text-primary">Active</span>
+                    </div>
                     <_motion.div
-                      animate={{
-                        boxShadow: [
-                          "0 0 0 0 rgba(58, 77, 63, 0.2)",
-                          "0 0 0 20px rgba(58, 77, 63, 0)",
-                        ],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                      }}
-                      className="w-40 h-40 rounded-[3rem] bg-linear-to-br from-[#3a4d3f] to-[#2d3a30] flex items-center justify-center text-6xl font-serif text-white shadow-2xl shadow-sage-900/30 relative z-10 group-hover/avatar:rotate-6 transition-transform duration-500"
+                      className="h-2 bg-sage-200/50 rounded-full overflow-hidden shadow-inner"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
                     >
-                      {user?.fullName?.charAt(0)}
+                      <_motion.div
+                        className="h-full bg-gradient-to-r from-primary via-primary-light to-primary rounded-full shadow-lg shadow-primary/50"
+                        initial={{ width: 0 }}
+                        animate={{ width: "90%" }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                      />
                     </_motion.div>
-                    <_motion.button
-                      whileHover={{ scale: 1.15 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="absolute -bottom-4 -right-4 p-4 bg-white rounded-2xl shadow-xl text-[#3a4d3f] border-2 border-sage-50 z-20 hover:shadow-2xl transition-shadow"
-                    >
-                      <Camera size={20} />
-                    </_motion.button>
-                  </div>
-
-                  {/* User Info */}
-                  <div className="text-center space-y-2">
-                    <h3 className="text-4xl font-serif text-[#2d3a30]">
-                      {user?.fullName}
-                    </h3>
-                    <p className="text-sage-500 font-bold text-sm tracking-tight">
-                      {user?.email}
-                    </p>
-                  </div>
-
-                  {/* Goals Tags */}
-                  {formData.goals.length > 0 && (
-                    <div className="flex flex-wrap justify-center gap-3 pt-4">
-                      {formData.goals.map((goal, i) => (
-                        <_motion.span
-                          key={i}
-                          initial={{
-                            opacity: 0,
-                            scale: 0.8,
-                          }}
-                          animate={{
-                            opacity: 1,
-                            scale: 1,
-                          }}
-                          transition={{ delay: i * 0.05 }}
-                          className="px-4 py-2 bg-linear-to-r from-[#3a4d3f]/10 to-[#2d3a30]/5 border border-[#3a4d3f]/20 rounded-full text-[11px] font-black text-[#3a4d3f] uppercase tracking-widest hover:bg-[#3a4d3f]/20 transition-all"
-                        >
-                          {goal}
-                        </_motion.span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Status Info */}
-                  <div className="w-full pt-8 space-y-4 border-t border-sage-100">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-black text-sage-500 uppercase tracking-[0.2em]">
-                        Sanctuary Status
-                      </span>
-                      <div className="flex items-center gap-2 text-green-600 font-bold">
-                        <CheckCircle size={18} />
-                        <span className="text-sm">Fully Attuned</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-black text-sage-500 uppercase tracking-[0.2em]">
-                        Current Vibe
-                      </span>
-                      <div className="flex items-center gap-2 text-[#3a4d3f] font-bold">
-                        <Activity size={18} />
-                        <span className="text-sm">Tranquil Flow</span>
-                      </div>
-                    </div>
-                  </div>
+                  </_motion.div>
                 </div>
               </div>
             </_motion.div>
+          </div>
 
-            {/* Edit Form - Modern & Spacious */}
-            <_motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="space-y-8"
+          {/* Settings Form - Modern Layout */}
+          <div className="lg:col-span-2">
+            <_motion.form
+              initial={{ opacity: 0, x: 20, scale: 0.95 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              onSubmit={handleSubmit}
+              className="bg-gradient-to-br from-white/90 via-white/85 to-cream/70 backdrop-blur-xl p-8 md:p-12 rounded-2xl shadow-2xl shadow-primary/10 border border-white/80 space-y-12 hover:shadow-primary/20 transition-all duration-500"
             >
-              <form
-                onSubmit={handleSubmit}
-                className="bg-white/70 backdrop-blur-md p-12 rounded-[4rem] border border-white/80 shadow-[0_20px_60px_rgba(0,0,0,0.08)] space-y-12"
-              >
-                {/* Full Name Field */}
-                <div className="space-y-4">
-                  <label className="text-[11px] font-black text-sage-500 uppercase tracking-[0.3em] flex items-center gap-3 px-1">
-                    <div className="w-5 h-5 rounded-lg bg-[#3a4d3f]/10 flex items-center justify-center">
-                      <User size={14} className="text-[#3a4d3f]" />
-                    </div>
-                    Sacred Label
-                  </label>
-                  <input
-                    value={formData.fullName}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        fullName: e.target.value,
-                      })
-                    }
-                    className="input-field text-lg! py-4! rounded-2xl!"
-                    placeholder="How shall we address you?"
-                  />
+              <div className="space-y-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-1.5 h-8 bg-primary rounded-full" />
+                  <h3 className="text-xl font-serif text-primary-dark tracking-tight">Personal Identity</h3>
                 </div>
 
-                {/* Intentions Grid */}
-                <div className="space-y-5">
-                  <label className="text-[11px] font-black text-sage-500 uppercase tracking-[0.3em] flex items-center gap-3 px-1">
-                    <div className="w-5 h-5 rounded-lg bg-[#3a4d3f]/10 flex items-center justify-center">
-                      <Target size={14} className="text-[#3a4d3f]" />
-                    </div>
-                    Refine Your Intentions
-                  </label>
-                  <div className="grid grid-cols-2 gap-4">
-                    {[
-                      "Flexibility",
-                      "Strength",
-                      "Stress Relief",
-                      "Weight Loss",
-                      "Spirituality",
-                      "Better Sleep",
-                    ].map((goal) => {
-                      const isSelected = formData.goals.includes(goal);
-                      return (
-                        <_motion.button
-                          key={goal}
-                          type="button"
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => {
-                            const newGoals = isSelected
-                              ? formData.goals.filter((g) => g !== goal)
-                              : [...formData.goals, goal];
-                            setFormData({
-                              ...formData,
-                              goals: newGoals,
-                            });
-                          }}
-                          className={`p-5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all border-2 ${
-                            isSelected
-                              ? "bg-linear-to-br from-[#3a4d3f] to-[#2d3a30] text-white border-[#3a4d3f] shadow-lg shadow-sage-200"
-                              : "bg-white border-sage-100 text-sage-600 hover:border-[#3a4d3f]/30 hover:text-[#3a4d3f] shadow-sm"
-                          }`}
-                        >
-                          {goal}
-                        </_motion.button>
-                      );
-                    })}
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-sage-400 uppercase tracking-[0.2em] ml-1">Sacred Name</label>
+                    <input
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      className="input-field"
+                      placeholder="Enter your name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-sage-400 uppercase tracking-[0.2em] ml-1">Email Essence</label>
+                    <input
+                      value={formData.email}
+                      disabled
+                      className="input-field opacity-50 cursor-not-allowed bg-cream/30"
+                      placeholder="Email Address"
+                    />
                   </div>
                 </div>
+              </div>
 
-                {/* Health Conditions */}
-                <div className="space-y-4">
-                  <label className="text-[11px] font-black text-sage-500 uppercase tracking-[0.3em] px-1">
-                    Divine Vulnerabilities
-                  </label>
+              <div className="space-y-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-1.5 h-8 bg-primary rounded-full" />
+                  <h3 className="text-xl font-serif text-primary-dark tracking-tight">Practice Intentions</h3>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {[
+                    "Flexibility",
+                    "Strength",
+                    "Stress Relief",
+                    "Weight Loss",
+                    "Spirituality",
+                    "Better Sleep",
+                  ].map((goal) => {
+                    const isSelected = formData.goals.includes(goal);
+                    return (
+                      <button
+                        key={goal}
+                        type="button"
+                        onClick={() => {
+                          const newGoals = isSelected
+                            ? formData.goals.filter((g) => g !== goal)
+                            : [...formData.goals, goal];
+                          setFormData({ ...formData, goals: newGoals });
+                        }}
+                        className={`p-4 rounded-2xl text-[10px] font-bold tracking-widest uppercase transition-all border ${
+                          isSelected
+                            ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105"
+                            : "bg-white border-sage-100 text-sage-400 hover:border-primary/30 hover:text-primary"
+                        }`}
+                      >
+                        {goal}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="space-y-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-1.5 h-8 bg-primary rounded-full" />
+                  <h3 className="text-xl font-serif text-primary-dark tracking-tight">Physical Vessel Notes</h3>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-sage-400 uppercase tracking-[0.2em] ml-1">Vulnerabilities or blockages</label>
                   <textarea
                     value={formData.healthConditions}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        healthConditions: e.target.value,
-                      })
-                    }
-                    className="input-field rounded-2xl! h-40 resize-none py-4! px-6! leading-relaxed text-base"
-                    placeholder="Share any physical or spiritual blockages our guide should know about..."
+                    onChange={(e) => setFormData({ ...formData, healthConditions: e.target.value })}
+                    className="input-field min-h-[140px] resize-none leading-relaxed"
+                    placeholder="E.g. Lower back sensitivity, knee injury..."
                   />
                 </div>
+              </div>
 
-                {/* Submit Section */}
-                <div className="pt-8 flex items-center justify-between border-t border-sage-100">
-                  <AnimatePresence>
-                    {success && (
-                      <_motion.div
-                        initial={{
-                          opacity: 0,
-                          scale: 0.9,
-                        }}
-                        animate={{
-                          opacity: 1,
-                          scale: 1,
-                        }}
-                        exit={{ opacity: 0 }}
-                        className="flex items-center gap-2 text-green-600 font-black text-[11px] uppercase tracking-widest bg-green-50/80 backdrop-blur-sm p-3 px-6 rounded-full border border-green-200"
-                      >
-                        <CheckCircle size={16} />
-                        Harmony Restored
-                      </_motion.div>
-                    )}
-                  </AnimatePresence>
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="btn-primary ml-auto shadow-2xl shadow-sage-200 flex items-center gap-4 px-12! py-5! hover:scale-105 transition-transform"
-                  >
-                    {saving ? (
-                      <>
-                        <Loader2 className="animate-spin" size={18} />
-                        Syncing...
-                      </>
-                    ) : (
-                      <>
-                        Update Identity <Save size={20} />
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
-            </_motion.div>
+              <div className="pt-8 border-t border-sage-50 flex flex-col sm:flex-row items-center justify-between gap-6">
+                <AnimatePresence>
+                  {success && (
+                    <_motion.div
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="text-green-600 text-xs font-bold flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full border border-green-100"
+                    >
+                      <CheckCircle size={14} /> Journey updated successfully
+                    </_motion.div>
+                  )}
+                </AnimatePresence>
+
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="btn-primary flex items-center gap-3 w-full sm:w-auto min-w-[200px] justify-center sm:ml-auto group"
+                >
+                  {saving ? (
+                    <Loader2 className="animate-spin" size={18} />
+                  ) : (
+                    <>Update Identity <Save size={18} className="group-hover:rotate-12 transition-transform" /></>
+                  )}
+                </button>
+              </div>
+            </_motion.form>
           </div>
         </div>
       </div>

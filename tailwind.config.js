@@ -8,9 +8,9 @@ export default {
     extend: {
       colors: {
         primary: {
-          light: "#dcfce7", // Soft green light
-          DEFAULT: "#86efac", // Soft green DEFAULT
-          dark: "#4ade80", // Soft green dark
+          light: "#2A523A", // Slightly lighter green
+          DEFAULT: "#1F3D2B", // Deep forest green (Requested)
+          dark: "#14291D", // Darker forest green
         },
         sage: {
           50: "#f8faf9",
@@ -26,21 +26,34 @@ export default {
           950: "#1a1f1d",
         },
         cream: {
-          light: "#fffef9",
-          DEFAULT: "#faf9f6", // Light beige / cream background
-          dark: "#f3f2ee",
+          light: "#FFFFFF",
+          DEFAULT: "#F5F3EF", // Warm neutral background (Requested)
+          dark: "#EBE9E4",
         },
       },
       fontFamily: {
         sans: [
           "Inter",
+          "Manrope",
           "system-ui",
           "sans-serif",
         ],
+        serif: [
+          "Playfair Display",
+          "Cormorant Garamond",
+          "serif",
+        ],
       },
       borderRadius: {
+        "button": "14px",
+        "input": "16px",
+        "card": "20px",
         "2xl": "1rem",
         "3xl": "1.5rem",
+      },
+      boxShadow: {
+        "soft": "0 4px 20px rgba(0, 0, 0, 0.05)",
+        "glass": "0 8px 32px rgba(0, 0, 0, 0.04)",
       },
     },
   },
