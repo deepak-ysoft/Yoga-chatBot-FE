@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @config "../tailwind.config.js";
 
+html {
+  scroll-behavior: smooth;
+}
+
 @layer base {
   body {
     /* Warm neutral background (Requested: #F5F3EF) */
