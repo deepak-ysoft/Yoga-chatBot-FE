@@ -1,5 +1,13 @@
 import { motion as _motion } from "framer-motion";
-import { Mail, Lock, User, Sparkles, ChevronRight, Eye, EyeOff } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  User,
+  Sparkles,
+  ChevronRight,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
@@ -12,7 +20,8 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] =
+    useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
@@ -20,14 +29,23 @@ const Register = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await authService.register({ fullName, email, password });
+      const response = await authService.register(
+        { fullName, email, password },
+      );
       if (response.success) {
         login(response.data, response.data.token);
       } else {
-        setError(response.message || "Failed to create account. Try again.");
+        setError(
+          response.message ||
+            "Failed to create account. Try again.",
+        );
       }
     } catch (err) {
-      setError("The universe is busy right now. Please try again later.");
+      setError(
+        `The universe is busy right now. Please try again later. ${
+          err.message
+        }`,
+      );
     } finally {
       setLoading(false);
     }
@@ -37,7 +55,10 @@ const Register = () => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.2 },
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
     },
   };
 
@@ -66,14 +87,22 @@ const Register = () => {
           animate="visible"
           className="bg-white/90 backdrop-blur-xl p-10 md:p-12 rounded-2xl w-full shadow-2xl shadow-primary/20 border border-white/80 space-y-8"
         >
-          <_motion.header variants={itemVariants} className="text-center space-y-4">
+          <_motion.header
+            variants={itemVariants}
+            className="text-center space-y-4"
+          >
             <_motion.div
-              whileHover={{ scale: 1.15, rotate: -10 }}
+              whileHover={{
+                scale: 1.15,
+                rotate: -10,
+              }}
               className="inline-flex p-4 bg-gradient-to-br from-sage-200/20 to-sage-200/5 rounded-2xl text-primary mb-2 shadow-lg shadow-sage-200/20"
             >
               <Sparkles size={28} />
             </_motion.div>
-            <h2 className="text-4xl font-serif text-primary-dark">Begin Your Journey</h2>
+            <h2 className="text-4xl font-serif text-primary-dark">
+              Begin Your Journey
+            </h2>
             <p className="text-sage-500 font-bold uppercase tracking-widest text-[11px]">
               Join thousands finding their flow
             </p>
@@ -85,7 +114,9 @@ const Register = () => {
               animate={{ opacity: 1, y: 0 }}
               className="bg-gradient-to-r from-red-50 to-red-50/50 text-red-600 p-4 rounded-xl text-xs font-bold border border-red-200/50 flex items-start gap-3"
             >
-              <div className="text-red-500 mt-0.5">⚠</div>
+              <div className="text-red-500 mt-0.5">
+                ⚠
+              </div>
               <span>{error}</span>
             </_motion.div>
           )}
@@ -97,16 +128,24 @@ const Register = () => {
             onSubmit={handleSubmit}
             className="space-y-5"
           >
-            <_motion.div variants={itemVariants} className="space-y-3">
+            <_motion.div
+              variants={itemVariants}
+              className="space-y-3"
+            >
               <label className="text-[11px] font-bold text-sage-600 uppercase tracking-widest ml-1 block">
                 Full Name
               </label>
               <div className="relative group">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 group-focus-within:text-primary transition-colors" size={18} />
+                <User
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 group-focus-within:text-primary transition-colors"
+                  size={18}
+                />
                 <input
                   type="text"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  onChange={(e) =>
+                    setFullName(e.target.value)
+                  }
                   className="input-field pl-12"
                   placeholder="Your Name"
                   required
@@ -114,16 +153,24 @@ const Register = () => {
               </div>
             </_motion.div>
 
-            <_motion.div variants={itemVariants} className="space-y-3">
+            <_motion.div
+              variants={itemVariants}
+              className="space-y-3"
+            >
               <label className="text-[11px] font-bold text-sage-600 uppercase tracking-widest ml-1 block">
                 Email Address
               </label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 group-focus-within:text-primary transition-colors" size={18} />
+                <Mail
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 group-focus-within:text-primary transition-colors"
+                  size={18}
+                />
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) =>
+                    setEmail(e.target.value)
+                  }
                   className="input-field pl-12"
                   placeholder="yogi@flow.com"
                   required
@@ -131,26 +178,42 @@ const Register = () => {
               </div>
             </_motion.div>
 
-            <_motion.div variants={itemVariants} className="space-y-3">
+            <_motion.div
+              variants={itemVariants}
+              className="space-y-3"
+            >
               <label className="text-[11px] font-bold text-sage-600 uppercase tracking-widest ml-1 block">
                 Password
               </label>
               <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 group-focus-within:text-primary transition-colors" size={18} />
+                <Lock
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 group-focus-within:text-primary transition-colors"
+                  size={18}
+                />
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={
+                    showPassword ? "text" : (
+                      "password"
+                    )
+                  }
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
                   className="input-field pl-12 pr-12"
                   placeholder="••••••••"
                   required
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() =>
+                    setShowPassword(!showPassword)
+                  }
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-sage-400 hover:text-primary transition-colors"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ?
+                    <EyeOff size={18} />
+                  : <Eye size={18} />}
                 </button>
               </div>
             </_motion.div>
@@ -163,16 +226,19 @@ const Register = () => {
               disabled={loading}
               className="btn-primary w-full flex items-center justify-center gap-2 group shadow-xl shadow-primary/30 mt-2 relative overflow-hidden"
             >
-              {loading ? (
+              {loading ?
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Manifesting Account...
                 </>
-              ) : (
-                <>
-                  Join Sanctuary <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              : <>
+                  Join Sanctuary{" "}
+                  <ChevronRight
+                    size={18}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
                 </>
-              )}
+              }
             </_motion.button>
           </_motion.form>
 
@@ -197,7 +263,10 @@ const Register = () => {
           >
             <p className="text-sage-600 text-sm">
               Already practicing?{" "}
-              <Link to="/login" className="text-primary font-bold hover:text-primary-dark transition-colors duration-300">
+              <Link
+                to="/login"
+                className="text-primary font-bold hover:text-primary-dark transition-colors duration-300"
+              >
                 Sign in here
               </Link>
             </p>

@@ -6,15 +6,9 @@ import {
 import ZenNav from "../components/layout/ZenNav";
 import { useAuth } from "../context/AuthContext";
 import {
-  User,
-  Target,
   Save,
-  Camera,
   CheckCircle,
-  Shield,
-  Activity,
   Loader2,
-  Sparkles,
 } from "lucide-react";
 import api from "../services/api";
 

@@ -20,7 +20,6 @@ import {
   Sparkles,
   User,
   History,
-  MoreVertical,
   Trash2,
   ChevronLeft,
   Share2,
@@ -29,21 +28,6 @@ import {
 import api from "../services/api";
 import ReactMarkdown from "react-markdown";
 import { GrYoga } from "react-icons/gr";
-
-// const typingCursorStyle = `
-//   @keyframes typing-cursor {
-//     0%, 49% { opacity: 1; }
-//     50%, 100% { opacity: 0; }
-//   }
-//   .typing-cursor {
-//     display: inline-block;
-//     width: 2px;
-//     height: 1em;
-//     background-color: currentColor;
-//     animation: typing-cursor 1s infinite;
-//     margin-left: 2px;
-//   }
-// `;
 
 const Chat = () => {
   const [searchParams, setSearchParams] =

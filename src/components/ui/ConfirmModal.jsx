@@ -1,5 +1,5 @@
 import {
-  motion,
+  motion as _motion,
   AnimatePresence,
 } from "framer-motion";
 import { AlertTriangle, X } from "lucide-react";
@@ -47,14 +47,14 @@ const ConfirmModal = ({
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <motion.div
+          <_motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="absolute inset-0 bg-sage-900/40 backdrop-blur-sm"
           />
-          <motion.div
+          <_motion.div
             initial={{
               opacity: 0,
               scale: 0.9,
@@ -112,7 +112,7 @@ const ConfirmModal = ({
                 </button>
               </div>
             </div>
-          </motion.div>
+          </_motion.div>
         </div>
       )}
     </AnimatePresence>

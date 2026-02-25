@@ -1,5 +1,12 @@
 import { motion as _motion } from "framer-motion";
-import { Mail, Lock, LogIn, Sparkles, Eye, EyeOff } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  LogIn,
+  Sparkles,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useState } from "react";
@@ -11,7 +18,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] =
+    useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
@@ -19,14 +27,24 @@ const Login = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await authService.login(email, password);
+      const response = await authService.login(
+        email,
+        password,
+      );
       if (response.success) {
         login(response.data, response.data.token);
       } else {
-        setError(response.message || "Credential mismatch. Try again.");
+        setError(
+          response.message ||
+            "Credential mismatch. Try again.",
+        );
       }
     } catch (err) {
-      setError("The connection was interrupted. Please try again.");
+      setError(
+        `The connection was interrupted. Please try again. ${
+          err.message
+        }`,
+      );
     } finally {
       setLoading(false);
     }
@@ -36,7 +54,10 @@ const Login = () => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.2 },
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
     },
   };
 
@@ -65,14 +86,22 @@ const Login = () => {
           animate="visible"
           className="bg-white/90 backdrop-blur-xl p-10 md:p-12 rounded-2xl w-full shadow-2xl shadow-primary/20 border border-white/80 space-y-8"
         >
-          <_motion.header variants={itemVariants} className="text-center space-y-4">
+          <_motion.header
+            variants={itemVariants}
+            className="text-center space-y-4"
+          >
             <_motion.div
-              whileHover={{ scale: 1.15, rotate: 10 }}
+              whileHover={{
+                scale: 1.15,
+                rotate: 10,
+              }}
               className="inline-flex p-4 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl text-primary mb-2 shadow-lg shadow-primary/10"
             >
               <Sparkles size={28} />
             </_motion.div>
-            <h2 className="text-4xl font-serif text-primary-dark">Welcome Back</h2>
+            <h2 className="text-4xl font-serif text-primary-dark">
+              Welcome Back
+            </h2>
             <p className="text-sage-500 font-bold uppercase tracking-widest text-[11px]">
               Reconnect with your practice
             </p>
@@ -84,7 +113,9 @@ const Login = () => {
               animate={{ opacity: 1, y: 0 }}
               className="bg-gradient-to-r from-red-50 to-red-50/50 text-red-600 p-4 rounded-xl text-xs font-bold border border-red-200/50 flex items-start gap-3"
             >
-              <div className="text-red-500 mt-0.5">⚠</div>
+              <div className="text-red-500 mt-0.5">
+                ⚠
+              </div>
               <span>{error}</span>
             </_motion.div>
           )}
@@ -96,16 +127,24 @@ const Login = () => {
             onSubmit={handleSubmit}
             className="space-y-6"
           >
-            <_motion.div variants={itemVariants} className="space-y-3">
+            <_motion.div
+              variants={itemVariants}
+              className="space-y-3"
+            >
               <label className="text-[11px] font-bold text-sage-600 uppercase tracking-widest ml-1 block">
                 Email Address
               </label>
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 group-focus-within:text-primary transition-colors" size={18} />
+                <Mail
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 group-focus-within:text-primary transition-colors"
+                  size={18}
+                />
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) =>
+                    setEmail(e.target.value)
+                  }
                   className="input-field pl-12"
                   placeholder="yogi@flow.com"
                   required
@@ -113,26 +152,42 @@ const Login = () => {
               </div>
             </_motion.div>
 
-            <_motion.div variants={itemVariants} className="space-y-3">
+            <_motion.div
+              variants={itemVariants}
+              className="space-y-3"
+            >
               <label className="text-[11px] font-bold text-sage-600 uppercase tracking-widest ml-1 block">
                 Password
               </label>
               <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 group-focus-within:text-primary transition-colors" size={18} />
+                <Lock
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-sage-400 group-focus-within:text-primary transition-colors"
+                  size={18}
+                />
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={
+                    showPassword ? "text" : (
+                      "password"
+                    )
+                  }
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
                   className="input-field pl-12 pr-12"
                   placeholder="••••••••"
                   required
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() =>
+                    setShowPassword(!showPassword)
+                  }
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-sage-400 hover:text-primary transition-colors"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ?
+                    <EyeOff size={18} />
+                  : <Eye size={18} />}
                 </button>
               </div>
             </_motion.div>
@@ -145,16 +200,19 @@ const Login = () => {
               disabled={loading}
               className="btn-primary w-full flex items-center justify-center gap-2 group shadow-xl shadow-primary/30 relative overflow-hidden"
             >
-              {loading ? (
+              {loading ?
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Aligning Chakras...
                 </>
-              ) : (
-                <>
-                  Enter Sanctuary <LogIn size={18} className="group-hover:translate-x-1 transition-transform" />
+              : <>
+                  Enter Sanctuary{" "}
+                  <LogIn
+                    size={18}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
                 </>
-              )}
+              }
             </_motion.button>
           </_motion.form>
 
@@ -179,7 +237,10 @@ const Login = () => {
           >
             <p className="text-sage-600 text-sm">
               New to the sanctuary?{" "}
-              <Link to="/register" className="text-primary font-bold hover:text-primary-dark transition-colors duration-300">
+              <Link
+                to="/register"
+                className="text-primary font-bold hover:text-primary-dark transition-colors duration-300"
+              >
                 Create an account
               </Link>
             </p>

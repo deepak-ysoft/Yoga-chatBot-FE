@@ -9,9 +9,6 @@ import {
   ChevronLeft,
   Check,
   Sparkles,
-  User,
-  Target,
-  Clock,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";

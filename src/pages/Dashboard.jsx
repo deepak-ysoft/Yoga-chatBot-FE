@@ -1,13 +1,10 @@
-import { useAuth } from "../context/AuthContext";
 import ZenNav from "../components/layout/ZenNav";
 import { motion as _motion } from "framer-motion";
 import {
   Sparkles,
-  History,
   ArrowRight,
   MessageSquare,
   Target,
-  User,
   Leaf,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -15,7 +12,6 @@ import { useState, useEffect } from "react";
 import api from "../services/api";
 
 const Dashboard = () => {
-  const { user } = useAuth();
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
 
