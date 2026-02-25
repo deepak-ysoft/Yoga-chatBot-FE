@@ -23,9 +23,12 @@ import {
   MoreVertical,
   Trash2,
   ChevronLeft,
+  Share2,
+  CheckCircle,
 } from "lucide-react";
 import api from "../services/api";
 import ReactMarkdown from "react-markdown";
+import { GrYoga } from "react-icons/gr";
 
 // const typingCursorStyle = `
 //   @keyframes typing-cursor {
@@ -62,6 +65,8 @@ const Chat = () => {
     deleteMessageModal,
     setDeleteMessageModal,
   ] = useState({ isOpen: false, id: null });
+  const [shareToast, setShareToast] =
+    useState(false);
 
   const messagesEndRef = useRef(null);
 
@@ -180,7 +185,7 @@ const Chat = () => {
           try {
             const data = JSON.parse(jsonStr);
             const content = data.text;
-            if (content) {
+            if (content && content !== "[DONE]") {
               assistantContent += content;
 
               setMessages((prev) => {
@@ -248,6 +253,38 @@ const Chat = () => {
       if (sessionId) fetchHistory(sessionId);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleShare = (text) => {
+    const shareUrl = window.location.href;
+    const content =
+      text ?
+        `${text}\n\nShared via YogaFlow AI: ${shareUrl}`
+      : shareUrl;
+
+    if (navigator.share) {
+      navigator
+        .share({
+          title: "YogaFlow AI Insight",
+          text: content,
+          url: shareUrl,
+        })
+        .catch(() => {
+          navigator.clipboard.writeText(content);
+          setShareToast(true);
+          setTimeout(
+            () => setShareToast(false),
+            2000,
+          );
+        });
+    } else {
+      navigator.clipboard.writeText(content);
+      setShareToast(true);
+      setTimeout(
+        () => setShareToast(false),
+        2000,
+      );
     }
   };
 
@@ -380,6 +417,31 @@ const Chat = () => {
           )}
         </AnimatePresence>
 
+        {/* Share Toast */}
+        <AnimatePresence>
+          {shareToast && (
+            <_motion.div
+              initial={{
+                opacity: 0,
+                y: 50,
+                scale: 0.9,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                scale: 1,
+              }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] bg-primary text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-white/20 backdrop-blur-md"
+            >
+              <CheckCircle size={18} />
+              <span className="text-sm font-bold uppercase tracking-widest">
+                Link Copied to Sanctuary
+              </span>
+            </_motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Toggle Sidebar Button */}
         <button
           onClick={() =>
@@ -408,6 +470,31 @@ const Chat = () => {
 
         {/* Main Chat Window */}
         <div className="flex-1 flex flex-col relative min-w-0 z-10">
+          {/* Chat Header Area */}
+          <div className="h-16 border-b border-sage-100/50 bg-white/50 backdrop-blur-md flex items-center justify-between px-6 shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <h2 className="text-sm font-serif text-primary-dark font-bold tracking-tight">
+                {sessionId ?
+                  sessions.find(
+                    (s) => s.id === sessionId,
+                  )?.title || "Spiritual Dialogue"
+                : "New Sanctuary"}
+              </h2>
+            </div>
+            {sessionId && (
+              <button
+                onClick={() => handleShare()}
+                className="flex items-center gap-2 px-4 py-2 bg-sage-50 hover:bg-sage-100 text-primary rounded-xl transition-all text-[10px] font-black uppercase tracking-widest border border-sage-100/50"
+              >
+                <Share2 size={14} />
+                <span className="hidden sm:inline">
+                  Share Session
+                </span>
+              </button>
+            )}
+          </div>
+
           <div
             className={`flex-1 p-4 md:p-10 lg:p-14 space-y-6 md:space-y-10 custom-scrollbar ${messages.length === 0 ? "overflow-hidden mt-0" : "overflow-y-auto"}`}
           >
@@ -528,45 +615,85 @@ const Chat = () => {
                         whileHover={{
                           scale: 1.02,
                         }}
-                        className={`p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-lg text-sm md:text-base leading-relaxed relative overflow-hidden group ${
+                        className={`p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-soft text-sm md:text-base leading-relaxed relative overflow-hidden group ${
                           isUser ?
                             "bg-gradient-to-br from-primary to-primary-dark text-white rounded-tr-none shadow-primary/20"
-                          : "bg-white border border-sage-100/70 text-sage-900 rounded-tl-none shadow-primary/5 hover:shadow-primary/15 transition-shadow"
+                          : "bg-white/90 border border-sage-100/50 text-sage-900 rounded-tl-none shadow-sm hover:shadow-md transition-all duration-300"
                         }`}
                       >
                         {!isUser && (
                           <>
-                            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-sage-200/10 to-primary/10 blur-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <div className="absolute top-2 right-2 flex items-center gap-1">
+                              <button
+                                onClick={() =>
+                                  handleShare(
+                                    m.message,
+                                  )
+                                }
+                                className="p-1.5 text-sage-300 hover:text-primary opacity-0 group-hover:opacity-100 transition-all hover:bg-primary/5 rounded-lg"
+                                title="Share Insight"
+                              >
+                                <Share2
+                                  size={14}
+                                />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  setDeleteMessageModal(
+                                    {
+                                      isOpen: true,
+                                      id: m.id,
+                                    },
+                                  )
+                                }
+                                className="p-1.5 text-sage-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50 rounded-lg"
+                                title="Delete Message"
+                              >
+                                <Trash2
+                                  size={14}
+                                />
+                              </button>
+                            </div>
                             <div
                               className="prose prose-sm md:prose-base max-w-none 
                               prose-headings:font-serif prose-headings:text-primary-dark 
                               prose-p:text-sage-700 prose-p:leading-relaxed prose-p:mb-4
-                              prose-ul:my-4 prose-ul:list-disc prose-ul:pl-5
+                              prose-ul:my-2 prose-ul:list-none prose-ul:pl-0
                               prose-ol:my-4 prose-ol:list-decimal prose-ol:pl-5
-                              prose-li:text-sage-700 prose-li:my-1 prose-li:marker:text-primary
+                              prose-li:text-sage-700 prose-li:my-3
                               prose-strong:text-primary-dark prose-strong:font-bold
                               prose-a:text-primary hover:prose-a:text-primary-dark 
                               prose-code:bg-primary/5 prose-code:text-primary prose-code:px-2 prose-code:py-1 prose-code:rounded
                               whitespace-pre-wrap"
                             >
-                              <ReactMarkdown>
+                              <ReactMarkdown
+                                components={{
+                                  li: ({
+                                    ...props
+                                  }) => (
+                                    <li
+                                      className="flex gap-3 items-start"
+                                      {...props}
+                                    >
+                                      <span className="mt-1.5 shrink-0 text-red-500 animate-pulse">
+                                        <GrYoga
+                                          size={
+                                            14
+                                          }
+                                        />
+                                      </span>
+                                      <span>
+                                        {
+                                          props.children
+                                        }
+                                      </span>
+                                    </li>
+                                  ),
+                                }}
+                              >
                                 {m.message}
                               </ReactMarkdown>
                             </div>
-                            <button
-                              onClick={() =>
-                                setDeleteMessageModal(
-                                  {
-                                    isOpen: true,
-                                    id: m.id,
-                                  },
-                                )
-                              }
-                              className="absolute top-2 right-2 p-1.5 text-sage-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-50 rounded-lg"
-                              title="Delete Message"
-                            >
-                              <Trash2 size={12} />
-                            </button>
                           </>
                         )}
                         {isUser && (
